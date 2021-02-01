@@ -1,5 +1,5 @@
 {
-  "name": "ts-type-guard-builder",
+  "name": "@pghalliday/ts-type-guard-builder",
   "version": "0.0.0",
   "description": "A tool for generating TypeScript interfaces and types with associated type guards",
   "author": "Peter Halliday <pghalliday@gmail.com> (https://pghalliday.com)",
