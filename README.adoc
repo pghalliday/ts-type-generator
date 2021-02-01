@@ -1,0 +1,26 @@
+= ts-type-guard-builder
+
+[![test](https://github.com/pghalliday/ts-type-guard-builder/workflows/build/badge.svg)](https://github.com/pghalliday/ts-type-guard-builder/actions?query=workflow%3Abuild)
+[![Coverage Status](https://coveralls.io/repos/github/pghalliday/ts-type-guard-builder/badge.svg?branch=main)](https://coveralls.io/github/pghalliday/ts-type-guard-builder?branch=main)
+
+A tool for generating TypeScript interfaces and types with associated type guards
+
+== Usage
+
+TODO: Add usage notes
+
+== Contributing
+
+Run unit tests and build before pushing/opening a pull request.
+
+Start https://github.com/pghalliday/alarmist[Alarmist] to lint, run tests and build on file changes:
+
+----
+npm start
+----
+
+Lint, run tests and build on demand:
+
+----
+npm run build
+----
