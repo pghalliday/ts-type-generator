@@ -14,7 +14,7 @@
   "homepage": "https://github.com/pghalliday/ts-type-guard-builder#readme",
   "main": "lib/index.js",
   "scripts": {
-    "cmd:lint": "eslint .. --ext .ts",
+    "cmd:lint": "eslint . --ext .ts",
     "cmd:test": "nyc mocha",
     "cmd:coverage": "nyc report -r text && nyc check-coverage",
     "cmd:build": "rimraf lib && tsc",
