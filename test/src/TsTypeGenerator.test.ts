@@ -1,4 +1,4 @@
-import {TsTypeGenerator} from "../../src"
+import {TsTypeGenerator} from "../../src/TsTypeGenerator"
 import {promisify} from 'util'
 import rimraf from 'rimraf'
 import {join} from 'path'
@@ -36,14 +36,14 @@ describe('TsTypeGenerator', () => {
 
     beforeEach(async () => {
         await p_rimraf(OUTPUT_DIRECTORY)
-        instance = new TsTypeGenerator(OUTPUT_DIRECTORY)
+        instance = new TsTypeGenerator()
     })
 
     describe('#type', () => {
         beforeEach(async () => {
             instance.type(TYPE_1)
             instance.type(TYPE_2)
-            await instance.generate()
+            await instance.generate(OUTPUT_DIRECTORY)
         })
 
         it('should create the hasOwnProperty library', () => {

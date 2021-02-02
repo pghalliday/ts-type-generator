@@ -12,7 +12,7 @@ export interface {{{name}}} {
     {{/booleans}}
 }
 
-export function isInterfaceType(value: unknown): value is InterfaceType {
+export function is{{{name}}}(value: unknown): value is {{{name}}} {
     if (typeof value !== "object") return false;
     if (value === null) return false;
     {{#strings}}
