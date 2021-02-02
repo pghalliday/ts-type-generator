@@ -1,6 +1,6 @@
 import mkdirp from "mkdirp"
-import {writeFile} from "fs/promises";
-import {join} from "path"
+import {copyFile, writeFile} from "fs/promises";
+import {join, resolve} from "path"
 import {Type} from "./Type";
 
 export class TsTypeGenerator {
@@ -16,8 +16,12 @@ export class TsTypeGenerator {
         return this
     }
 
-    async build(): Promise<void> {
+    async generate(): Promise<void> {
         await mkdirp(this.outputDirectory)
+        await copyFile(
+            resolve(__dirname, "../files/hasOwnProperty.ts"),
+            join(this.outputDirectory, "hasOwnProperty.ts")
+        )
         for (const type of this.types) {
             await writeFile(
                 join(this.outputDirectory, type.name + ".ts"),

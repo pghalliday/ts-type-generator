@@ -1,0 +1,31 @@
+import {hasOwnProperty} from "./hasOwnProperty";
+
+export interface {{{name}}} {
+    {{#strings}}
+    {{{.}}}: string;
+    {{/strings}}
+    {{#numbers}}
+    {{{.}}}: number;
+    {{/numbers}}
+    {{#booleans}}
+    {{{.}}}: boolean;
+    {{/booleans}}
+}
+
+export function isInterfaceType(value: unknown): value is InterfaceType {
+    if (typeof value !== "object") return false;
+    if (value === null) return false;
+    {{#strings}}
+    if (!hasOwnProperty(value, "{{{.}}}")) return false;
+    if (typeof value.{{{.}}} !== "string") return false;
+    {{/strings}}
+    {{#numbers}}
+    if (!hasOwnProperty(value, "{{{.}}}")) return false;
+    if (typeof value.{{{.}}} !== "number") return false;
+    {{/numbers}}
+    {{#booleans}}
+    if (!hasOwnProperty(value, "{{{.}}}")) return false;
+    if (typeof value.{{{.}}} !== "boolean") return false;
+    {{/booleans}}
+    return true;
+}

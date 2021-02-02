@@ -1,12 +1,16 @@
-import {TsTypeGenerator} from "../../src/TsTypeGenerator"
+import {TsTypeGenerator} from "../../src"
 import {promisify} from 'util'
 import rimraf from 'rimraf'
 import {join} from 'path'
 import {Type} from '../../src/Type'
+import {readFileSync} from "fs";
 
 const p_rimraf = promisify(rimraf)
 
+const FIXTURES_DIRECTORY = 'test/fixtures'
 const OUTPUT_DIRECTORY = 'temp'
+const HAS_OWN_PROPERTY_FILE_NAME = 'hasOwnProperty.ts'
+const HAS_OWN_PROPERTY_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, HAS_OWN_PROPERTY_FILE_NAME)).toString()
 
 class TestType implements Type {
     name: string
@@ -35,11 +39,16 @@ describe('TsTypeGenerator', () => {
         instance = new TsTypeGenerator(OUTPUT_DIRECTORY)
     })
 
-    describe('#addType', () => {
+    describe('#type', () => {
         beforeEach(async () => {
             instance.type(TYPE_1)
             instance.type(TYPE_2)
-            await instance.build()
+            await instance.generate()
+        })
+
+        it('should create the hasOwnProperty library', () => {
+            const path = join(OUTPUT_DIRECTORY, HAS_OWN_PROPERTY_FILE_NAME)
+            path.should.be.a.file().with.content(HAS_OWN_PROPERTY_FILE_CONTENT)
         })
 
         it('should create the type files', () => {

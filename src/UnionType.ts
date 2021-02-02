@@ -2,9 +2,10 @@ import {Type} from "./Type";
 import map from "lodash/map"
 import Mustache from "mustache";
 import {readFileSync} from "fs";
+import {resolve} from 'path'
 
 const UNION_SEPARATOR = ' | '
-const TYPE_FILE_TEMPLATE = readFileSync('src/templates/UnionType.ts.mustache').toString()
+const TYPE_FILE_TEMPLATE = readFileSync(resolve(__dirname, '../templates/UnionType.ts.mustache')).toString()
 
 export class UnionType implements Type {
     name: string
