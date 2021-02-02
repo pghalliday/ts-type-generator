@@ -1,5 +1,5 @@
 {
-  "name": "@pghalliday/ts-type-guard-builder",
+  "name": "@pghalliday/ts-type-generator",
   "version": "0.0.0",
   "description": "A tool for generating TypeScript interfaces and types with associated type guards",
   "author": "Peter Halliday <pghalliday@gmail.com> (https://pghalliday.com)",
@@ -50,7 +50,11 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.168",
     "@types/mkdirp": "^1.0.1",
-    "mkdirp": "^1.0.4"
+    "@types/mustache": "^4.1.1",
+    "lodash": "^4.17.20",
+    "mkdirp": "^1.0.4",
+    "mustache": "^4.1.0"
   }
 }

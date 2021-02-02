@@ -1,4 +1,4 @@
-= ts-type-guard-builder
+= ts-type-generator
 
 image:https://github.com/pghalliday/ts-type-guard-builder/workflows/build/badge.svg["Build Status", link="https://github.com/pghalliday/ts-type-guard-builder/actions?query=workflow%3Abuild"]
 image:https://coveralls.io/repos/github/pghalliday/ts-type-guard-builder/badge.svg?branch=main["Coverage Status", link="https://coveralls.io/github/pghalliday/ts-type-guard-builder?branch=main"]

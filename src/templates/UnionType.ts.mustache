@@ -1,0 +1,20 @@
+export type {{{name}}} = {{{values}}};
+
+export function is{{{name}}}(value: unknown): value is {{{name}}} {
+    if (typeof value === "string") {
+        {{#strings}}
+        if (value === {{{.}}}) return true;
+        {{/strings}}
+    }
+    if (typeof value === "number") {
+        {{#numbers}}
+        if (value === {{{.}}}) return true;
+        {{/numbers}}
+    }
+    if (typeof value === "boolean") {
+        {{#booleans}}
+        if (value === {{{.}}}) return true;
+        {{/booleans}}
+    }
+    return false;
+}
