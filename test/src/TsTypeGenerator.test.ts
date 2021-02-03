@@ -1,9 +1,9 @@
-import {TsTypeGenerator} from "../../src/TsTypeGenerator"
+import {TsTypeGenerator} from "../../src"
 import {promisify} from 'util'
 import rimraf from 'rimraf'
 import {join} from 'path'
-import {Type} from '../../src/Type'
 import {readFileSync} from "fs";
+import {TestType} from "../TestType";
 
 const p_rimraf = promisify(rimraf)
 
@@ -11,22 +11,6 @@ const FIXTURES_DIRECTORY = 'test/fixtures'
 const OUTPUT_DIRECTORY = 'temp'
 const HAS_OWN_PROPERTY_FILE_NAME = 'hasOwnProperty.ts'
 const HAS_OWN_PROPERTY_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, HAS_OWN_PROPERTY_FILE_NAME)).toString()
-
-class TestType implements Type {
-    name: string
-
-    constructor(name: string) {
-        this.name = name
-    }
-
-    getTypeFileContent(): string {
-        return this.name + ' type file'
-    }
-
-    getTypeFileName(): string {
-        return this.name + '.ts'
-    }
-}
 
 const TYPE_1 = new TestType('Type1')
 const TYPE_2 = new TestType('Type2')

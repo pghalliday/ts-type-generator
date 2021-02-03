@@ -1,31 +1,20 @@
-import {hasOwnProperty} from "./hasOwnProperty";
+import { hasOwnProperty } from "./hasOwnProperty";
+{{#types}}
+import { {{{.}}}, is{{{.}}} } from "./{{{.}}}";
+{{/types}}
 
 export interface {{{name}}} {
-    {{#strings}}
-    {{{.}}}: string;
-    {{/strings}}
-    {{#numbers}}
-    {{{.}}}: number;
-    {{/numbers}}
-    {{#booleans}}
-    {{{.}}}: boolean;
-    {{/booleans}}
+    {{#properties}}
+    {{{name}}}: {{{type}}};
+    {{/properties}}
 }
 
 export function is{{{name}}}(value: unknown): value is {{{name}}} {
     if (typeof value !== "object") return false;
     if (value === null) return false;
-    {{#strings}}
-    if (!hasOwnProperty(value, "{{{.}}}")) return false;
-    if (typeof value.{{{.}}} !== "string") return false;
-    {{/strings}}
-    {{#numbers}}
-    if (!hasOwnProperty(value, "{{{.}}}")) return false;
-    if (typeof value.{{{.}}} !== "number") return false;
-    {{/numbers}}
-    {{#booleans}}
-    if (!hasOwnProperty(value, "{{{.}}}")) return false;
-    if (typeof value.{{{.}}} !== "boolean") return false;
-    {{/booleans}}
+    {{#properties}}
+    if (!hasOwnProperty(value, "{{{name}}}")) return false;
+    if (!is{{{type}}}(value["{{{name}}}"])) return false;
+    {{/properties}}
     return true;
 }

@@ -1,15 +1,14 @@
-import {InterfaceType} from "../../src/InterfaceType"
+import {InterfaceType} from "../../../src"
 import {join} from 'path'
 import {readFileSync} from "fs";
+import {TestType} from "../../TestType";
 
 const FIXTURES_DIRECTORY = 'test/fixtures'
 const TYPE_NAME = 'InterfaceType'
-const STRING_1 = 'string1'
-const NUMBER_1 = 'number1'
-const BOOLEAN_1 = 'boolean1'
-const STRING_2 = 'string2'
-const NUMBER_2 = 'number2'
-const BOOLEAN_2 = 'boolean2'
+const PROPERTY_1 = 'property1'
+const TYPE_1 = new TestType('Type1')
+const PROPERTY_2 = 'property2'
+const TYPE_2 = new TestType('Type2')
 const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
 
 describe('InterfaceType', () => {
@@ -17,12 +16,8 @@ describe('InterfaceType', () => {
 
     beforeEach(async () => {
         instance = new InterfaceType(TYPE_NAME)
-            .string(STRING_1)
-            .number(NUMBER_1)
-            .boolean(BOOLEAN_1)
-            .string(STRING_2)
-            .number(NUMBER_2)
-            .boolean(BOOLEAN_2)
+            .property(PROPERTY_1, TYPE_1)
+            .property(PROPERTY_2, TYPE_2)
     })
 
     it('should have the correct name', () => {
@@ -31,5 +26,12 @@ describe('InterfaceType', () => {
 
     it('should have the correct type file content', () => {
         instance.getTypeFileContent().should.equal(TYPE_FILE_CONTENT)
+    })
+
+    it('should report the correct imports', () => {
+        instance.getImports().should.eql([
+            TYPE_1,
+            TYPE_2
+        ])
     })
 })
