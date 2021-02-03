@@ -1,6 +1,6 @@
 {
   "name": "@pghalliday/ts-type-generator",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A tool for generating TypeScript interfaces and types with associated type guards",
   "author": "Peter Halliday <pghalliday@gmail.com> (https://pghalliday.com)",
   "license": "ISC",
@@ -24,7 +24,8 @@
     "alarmist:build": "chokidar \"src/**/*\" -c \"alarmist-npm cmd:build\"",
     "start": "alarmist-monitor run-p alarmist:lint alarmist:test alarmist:coverage alarmist:build",
     "test": "run-s cmd:lint cmd:test cmd:coverage",
-    "build": "run-s test cmd:build"
+    "build": "run-s test cmd:build",
+    "prepublishOnly": "run-s build"
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
