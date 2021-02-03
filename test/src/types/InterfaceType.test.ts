@@ -4,7 +4,7 @@ import {readFileSync} from "fs";
 import {TestType} from "../../TestType";
 
 const FIXTURES_DIRECTORY = 'test/fixtures'
-const TYPE_NAME = 'InterfaceType'
+const TYPE_NAME = 'MyInterfaceType'
 const PROPERTY_1 = 'property1'
 const TYPE_1 = new TestType('Type1')
 const PROPERTY_2 = 'property2'

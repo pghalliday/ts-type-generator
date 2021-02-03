@@ -2,12 +2,12 @@ import { hasOwnProperty } from "./hasOwnProperty";
 import { Type1, isType1 } from "./Type1";
 import { Type2, isType2 } from "./Type2";
 
-export interface InterfaceType {
+export interface MyInterfaceType {
     property1: Type1;
     property2: Type2;
 }
 
-export function isInterfaceType(value: unknown): value is InterfaceType {
+export function isMyInterfaceType(value: unknown): value is MyInterfaceType {
     if (typeof value !== "object") return false;
     if (value === null) return false;
     if (!hasOwnProperty(value, "property1")) return false;

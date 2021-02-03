@@ -4,7 +4,7 @@ import {readFileSync} from "fs";
 import {TestType} from "../../TestType";
 
 const FIXTURES_DIRECTORY = 'test/fixtures'
-const TYPE_NAME = 'ArrayType'
+const TYPE_NAME = 'MyArrayType'
 const TYPE = new TestType('Type')
 const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
 const GENERATED_TYPE_NAME_REGEXP = new RegExp('^TTG_Anonymous_Array_[0-9]+$')

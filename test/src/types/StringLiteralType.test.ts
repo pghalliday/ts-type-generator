@@ -3,7 +3,7 @@ import {join} from 'path'
 import {readFileSync} from "fs";
 
 const FIXTURES_DIRECTORY = 'test/fixtures'
-const TYPE_NAME = 'StringLiteralType'
+const TYPE_NAME = 'MyStringLiteralType'
 const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
 const GENERATED_TYPE_NAME_REGEXP = new RegExp('^TTG_Anonymous_StringLiteral_[0-9]+$')
 const VALUE = "hello"

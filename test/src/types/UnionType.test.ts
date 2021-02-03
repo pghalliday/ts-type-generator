@@ -4,7 +4,7 @@ import {readFileSync} from "fs";
 import {TestType} from "../../TestType";
 
 const FIXTURES_DIRECTORY = 'test/fixtures'
-const TYPE_NAME = 'UnionType'
+const TYPE_NAME = 'MyUnionType'
 const TYPE_1 = new TestType('Type1')
 const TYPE_2 = new TestType('Type2')
 const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
