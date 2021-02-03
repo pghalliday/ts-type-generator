@@ -1,11 +1,13 @@
-import {Type} from "../Type";
+import {Type} from "../util/Type";
 import Mustache from "mustache";
 import {readFileSync} from "fs";
-import {resolve} from 'path'
+import {join} from 'path'
 import map from 'lodash/map'
 import uniq from 'lodash/uniq'
+import {getName} from "../util/getName";
+import {TEMPLATES_DIR} from "../util/constants";
 
-const TYPE_FILE_TEMPLATE = readFileSync(resolve(__dirname, '../../templates/InterfaceType.ts.mustache')).toString()
+const TYPE_FILE_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.ts.mustache')).toString()
 
 interface Property {
     name: string
@@ -16,8 +18,8 @@ export class InterfaceType implements Type {
     name: string
     properties: Property[] = []
 
-    constructor(name: string) {
-        this.name = name
+    constructor(name?: string) {
+        this.name = getName('Interface', name)
     }
 
     property(name: string, type: Type): InterfaceType {
@@ -39,7 +41,7 @@ export class InterfaceType implements Type {
         })
     }
 
-    getImports(): Type[] {
+    getTypeDependencies(): Type[] {
         return map(this.properties, property => property.type);
     }
 }

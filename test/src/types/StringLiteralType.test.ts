@@ -1,23 +1,19 @@
-import {UnionType} from "../../../src"
+import {StringLiteralType} from "../../../src"
 import {join} from 'path'
 import {readFileSync} from "fs";
-import {TestType} from "../../TestType";
 
 const FIXTURES_DIRECTORY = 'test/fixtures'
-const TYPE_NAME = 'UnionType'
-const TYPE_1 = new TestType('Type1')
-const TYPE_2 = new TestType('Type2')
+const TYPE_NAME = 'StringLiteralType'
 const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
-const GENERATED_TYPE_NAME_REGEXP = new RegExp('^TTG_Anonymous_Union_[0-9]+$')
+const GENERATED_TYPE_NAME_REGEXP = new RegExp('^TTG_Anonymous_StringLiteral_[0-9]+$')
+const VALUE = "hello"
 
-describe('UnionType', () => {
-    let instance: UnionType
+describe('StringLiteralType', () => {
+    let instance: StringLiteralType
 
     describe('with name', () => {
         beforeEach(async () => {
-            instance = new UnionType(TYPE_NAME)
-                .type(TYPE_1)
-                .type(TYPE_2)
+            instance = new StringLiteralType(VALUE, TYPE_NAME)
         })
 
         it('should have the correct name', () => {
@@ -29,16 +25,13 @@ describe('UnionType', () => {
         })
 
         it('should report the correct imports', () => {
-            instance.getTypeDependencies().should.eql([
-                TYPE_1,
-                TYPE_2
-            ])
+            instance.getTypeDependencies().should.eql([])
         })
     })
 
     describe('when anonymous', () => {
         beforeEach(async () => {
-            instance = new UnionType()
+            instance = new StringLiteralType(VALUE)
         })
 
         it('should have a generated name', () => {

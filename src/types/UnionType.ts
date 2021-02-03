@@ -1,18 +1,20 @@
-import {Type} from "../Type";
+import {Type} from "../util/Type";
 import map from "lodash/map"
 import Mustache from "mustache";
 import {readFileSync} from "fs";
-import {resolve} from 'path'
+import {join} from 'path'
+import {getName} from "../util/getName";
+import {TEMPLATES_DIR} from "../util/constants";
 
 const UNION_SEPARATOR = ' | '
-const TYPE_FILE_TEMPLATE = readFileSync(resolve(__dirname, '../../templates/UnionType.ts.mustache')).toString()
+const TYPE_FILE_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'UnionType.ts.mustache')).toString()
 
 export class UnionType implements Type {
     name: string
     types: Type[] = []
 
-    constructor(name: string) {
-        this.name = name
+    constructor(name?: string) {
+        this.name = getName('Union', name)
     }
 
     type(type: Type): UnionType {
@@ -28,7 +30,7 @@ export class UnionType implements Type {
         })
     }
 
-    getImports(): Type[] {
+    getTypeDependencies(): Type[] {
         return this.types;
     }
 }

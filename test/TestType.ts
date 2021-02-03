@@ -1,10 +1,16 @@
-import {Type} from "../src/Type";
+import {Type} from "../src/util/Type";
 
 export class TestType implements Type {
     name: string
+    types: Type[] = []
 
     constructor(name: string) {
         this.name = name
+    }
+
+    type(type: Type): TestType {
+        this.types.push(type)
+        return this
     }
 
     getTypeFileContent(): string {
@@ -15,7 +21,7 @@ export class TestType implements Type {
         return this.name + '.ts'
     }
 
-    getImports(): Type[] {
-        return []
+    getTypeDependencies(): Type[] {
+        return this.types
     }
 }

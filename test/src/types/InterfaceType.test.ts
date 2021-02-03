@@ -10,6 +10,7 @@ const TYPE_1 = new TestType('Type1')
 const PROPERTY_2 = 'property2'
 const TYPE_2 = new TestType('Type2')
 const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
+const GENERATED_TYPE_NAME_REGEXP = new RegExp('^TTG_Anonymous_Interface_[0-9]+$')
 
 describe('InterfaceType', () => {
     let instance: InterfaceType
@@ -29,9 +30,19 @@ describe('InterfaceType', () => {
     })
 
     it('should report the correct imports', () => {
-        instance.getImports().should.eql([
+        instance.getTypeDependencies().should.eql([
             TYPE_1,
             TYPE_2
         ])
+    })
+
+    describe('when anonymous', () => {
+        beforeEach(async () => {
+            instance = new InterfaceType()
+        })
+
+        it('should have a generated name', () => {
+            instance.name.should.match(GENERATED_TYPE_NAME_REGEXP)
+        })
     })
 })

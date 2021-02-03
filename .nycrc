@@ -1,6 +1,7 @@
 {
   "all": true,
   "include": [
+    "files/**/*.ts",
     "src/**/*.ts"
   ],
   "check-coverage": false,

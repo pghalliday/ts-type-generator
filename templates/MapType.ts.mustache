@@ -1,0 +1,10 @@
+import { isMapOf } from "./isMapOf";
+import { {{{type}}}, is{{{type}}} } from "./{{{type}}}";
+
+export type {{{name}}} = Record<string, {{{type}}}>;
+
+export function isMapType(value: unknown): value is MapType {
+    if (!(typeof value === "object")) return false;
+    if (value === null) return false;
+    return isMapOf(value, is{{{type}}});
+}
