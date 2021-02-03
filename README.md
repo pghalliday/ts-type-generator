@@ -128,8 +128,8 @@ new TsTypeGenerator()
             .property(
                 "name",
                 new Interface()
-                    .property('firstName', stringType)
-                    .property('lastName', stringType)
+                    .property("firstName", stringType)
+                    .property("lastName", stringType)
             )
     )
     .generate(resolve(__dirname, "../lib"));
