@@ -12,6 +12,11 @@
     "url": "https://github.com/pghalliday/ts-type-generator/issues"
   },
   "homepage": "https://github.com/pghalliday/ts-type-generator#readme",
+  "files": [
+    "/lib/",
+    "/templates/",
+    "/files/"
+  ],
   "main": "lib/index.js",
   "scripts": {
     "cmd:lint": "eslint . --ext .ts",
