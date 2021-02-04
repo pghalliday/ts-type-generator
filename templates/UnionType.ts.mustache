@@ -1,12 +1,1 @@
-{{#types}}
-import { {{{name}}}, is{{{name}}} } from "./{{{name}}}";
-{{/types}}
-
-export type {{{name}}} = {{{values}}};
-
-export function is{{{name}}}(value: unknown): value is {{{name}}} {
-    {{#types}}
-    if (is{{{name}}}(value)) return true;
-    {{/types}}
-    return false;
-}
+type {{{name}}} = {{{types}}};

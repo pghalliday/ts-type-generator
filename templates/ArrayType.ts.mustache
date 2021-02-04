@@ -1,11 +1,1 @@
-import { {{{type}}}, is{{{type}}} } from "./{{{type}}}";
-
-export type {{{name}}} = {{{type}}}[];
-
-export function is{{{name}}}(value: unknown): value is {{{name}}} {
-    if (!Array.isArray(value)) return false;
-    for (const item of value) {
-        if (!is{{{type}}}(item)) return false;
-    }
-    return true;
-}
+type {{{name}}} = {{{type}}}[];

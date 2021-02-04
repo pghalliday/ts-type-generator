@@ -1,11 +1,14 @@
 import {Type} from "../src/util/Type";
+import map from 'lodash/map'
 
 export class TestType implements Type {
     name: string
+    exported: boolean
     types: Type[] = []
 
-    constructor(name: string) {
+    constructor(name: string, exported: boolean) {
         this.name = name
+        this.exported = exported
     }
 
     type(type: Type): TestType {
@@ -13,15 +16,23 @@ export class TestType implements Type {
         return this
     }
 
-    getTypeFileContent(): string {
-        return this.name + ' type file'
+    getName(): string {
+        return this.name
     }
 
-    getTypeFileName(): string {
-        return this.name + '.ts'
+    isExported(): boolean {
+        return this.exported
     }
 
-    getTypeDependencies(): Type[] {
+    getTypeDefinition(): string {
+        return 'type ' + this.getName() + ' = ' + (this.types.length ? map(this.types, type => type.getName()).join(' | ') : 'null') + ';\n'
+    }
+
+    getTypeGuardDefinition(): string {
+        return 'function is' + this.getName() + '(value: unknown): value is ' + this.getName() + ' {\n    return true;\n}\n'
+    }
+
+    getDependencies(): Type[] {
         return this.types
     }
 }

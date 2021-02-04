@@ -1,20 +1,5 @@
-import { hasOwnProperty } from "./hasOwnProperty";
-{{#types}}
-import { {{{.}}}, is{{{.}}} } from "./{{{.}}}";
-{{/types}}
-
-export interface {{{name}}} {
+interface {{{name}}} {
     {{#properties}}
     {{{name}}}: {{{type}}};
     {{/properties}}
-}
-
-export function is{{{name}}}(value: unknown): value is {{{name}}} {
-    if (typeof value !== "object") return false;
-    if (value === null) return false;
-    {{#properties}}
-    if (!hasOwnProperty(value, "{{{name}}}")) return false;
-    if (!is{{{type}}}(value["{{{name}}}"])) return false;
-    {{/properties}}
-    return true;
 }

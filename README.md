@@ -105,9 +105,9 @@ Types all have the same base `Type` class, so they can be used wherever a type i
 Some primitive types are provided as constants. Here we are using the `stringType` as an alias for `string`. We have to use an instance of `Type` so this has been created as a singleton. Using the `stringType` will result in a `String` type file being created with the following content:
 
 ```typescript
-export type StringType = string;
+export type StringTypeTs = string;
 
-export function isStringType(value: unknown): value is StringType {
+export function isStringType(value: unknown): value is StringTypeTs {
     ...
 }
 ```

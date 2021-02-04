@@ -1,5 +1,7 @@
 export interface Type {
-    name: string
-    getTypeFileContent(): string
-    getTypeDependencies(): Type[]
+    getName(): string
+    isExported(): boolean
+    getTypeDefinition(): string
+    getTypeGuardDefinition(): string
+    getDependencies(): Type[]
 }

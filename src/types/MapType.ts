@@ -1,29 +1,45 @@
 import {Type} from "../util/Type";
-import {getName} from "../util/getName";
+import {ExportParams, getExportParams} from "../util/ExportParams";
 import {readFileSync} from "fs";
 import {join} from "path";
 import {TEMPLATES_DIR} from "../util/constants";
 import Mustache from "mustache";
 
-const TYPE_FILE_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'MapType.ts.mustache')).toString()
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'MapType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'MapType.guard.ts.mustache')).toString()
 
 export class MapType implements Type {
-    name: string
+    exportParams: ExportParams
     type: Type
 
     constructor(type: Type, name?: string) {
-        this.name = getName('Map', name)
+        this.exportParams = getExportParams('Map', name)
         this.type = type
     }
 
-    getTypeFileContent(): string {
-        return Mustache.render(TYPE_FILE_TEMPLATE, {
-            name: this.name,
-            type: this.type.name,
+    getName(): string {
+        return this.exportParams.name
+    }
+
+    isExported(): boolean {
+        return this.exportParams.exported
+    }
+
+    getTypeDefinition(): string {
+        return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
+            name: this.getName(),
+            type: this.type.getName(),
         })
     }
 
-    getTypeDependencies(): Type[] {
+    getTypeGuardDefinition(): string {
+        return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
+            name: this.getName(),
+            type: this.type.getName(),
+        })
+    }
+
+    getDependencies(): Type[] {
         return [this.type]
     }
 }

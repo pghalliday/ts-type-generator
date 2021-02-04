@@ -3,11 +3,11 @@ import Mustache from "mustache";
 import {readFileSync} from "fs";
 import {join} from 'path'
 import map from 'lodash/map'
-import uniq from 'lodash/uniq'
-import {getName} from "../util/getName";
+import {ExportParams, getExportParams} from "../util/ExportParams";
 import {TEMPLATES_DIR} from "../util/constants";
 
-const TYPE_FILE_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.ts.mustache')).toString()
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.guard.ts.mustache')).toString()
 
 interface Property {
     name: string
@@ -15,11 +15,11 @@ interface Property {
 }
 
 export class InterfaceType implements Type {
-    name: string
+    exportParams: ExportParams
     properties: Property[] = []
 
     constructor(name?: string) {
-        this.name = getName('Interface', name)
+        this.exportParams = getExportParams('Interface', name)
     }
 
     property(name: string, type: Type): InterfaceType {
@@ -30,18 +30,35 @@ export class InterfaceType implements Type {
         return this
     }
 
-    getTypeFileContent(): string {
-        return Mustache.render(TYPE_FILE_TEMPLATE, {
-            name: this.name,
+    getName(): string {
+        return this.exportParams.name
+    }
+
+    isExported(): boolean {
+        return this.exportParams.exported
+    }
+
+    getTypeDefinition(): string {
+        return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
+            name: this.getName(),
             properties: map(this.properties, property => ({
                 name: property.name,
-                type: property.type.name,
+                type: property.type.getName(),
             })),
-            types: uniq(map(this.properties, property => property.type.name)),
         })
     }
 
-    getTypeDependencies(): Type[] {
+    getTypeGuardDefinition(): string {
+        return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
+            name: this.getName(),
+            properties: map(this.properties, property => ({
+                name: property.name,
+                type: property.type.getName(),
+            })),
+        })
+    }
+
+    getDependencies(): Type[] {
         return map(this.properties, property => property.type);
     }
 }

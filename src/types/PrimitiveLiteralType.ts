@@ -4,17 +4,18 @@ import {readFileSync} from "fs";
 import {join} from "path";
 import {TEMPLATES_DIR} from "../util/constants";
 import Mustache from "mustache";
+import {Primitive} from "../util/Primitive";
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ArrayType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ArrayType.guard.ts.mustache')).toString()
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'PrimitiveLiteralType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'PrimitiveLiteralType.guard.ts.mustache')).toString()
 
-export class ArrayType implements Type {
+export class PrimitiveLiteralType<T extends Primitive> implements Type {
     exportParams: ExportParams
-    type: Type
+    value: T
 
-    constructor(type: Type, name?: string) {
-        this.exportParams = getExportParams('Array', name)
-        this.type = type
+    constructor(value: T, name?: string) {
+        this.exportParams = getExportParams(typeof value + 'Literal', name)
+        this.value = value
     }
 
     getName(): string {
@@ -28,18 +29,20 @@ export class ArrayType implements Type {
     getTypeDefinition(): string {
         return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            type: this.type.getName(),
+            value: JSON.stringify(this.value),
+            type: typeof this.value,
         })
     }
 
     getTypeGuardDefinition(): string {
         return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            type: this.type.getName()
+            value: JSON.stringify(this.value),
+            type: typeof this.value,
         })
     }
 
     getDependencies(): Type[] {
-        return [this.type]
+        return []
     }
 }

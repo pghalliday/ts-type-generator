@@ -1,20 +1,21 @@
 import {Type} from "../util/Type";
-import {ExportParams, getExportParams} from "../util/ExportParams";
 import {readFileSync} from "fs";
 import {join} from "path";
 import {TEMPLATES_DIR} from "../util/constants";
+import {Primitive} from "../util/Primitive";
 import Mustache from "mustache";
+import {ExportParams, getExportParams} from "../util/ExportParams";
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ArrayType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ArrayType.guard.ts.mustache')).toString()
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'PrimitiveType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'PrimitiveType.guard.ts.mustache')).toString()
 
-export class ArrayType implements Type {
+export class PrimitiveType<T extends Primitive> implements Type {
     exportParams: ExportParams
-    type: Type
+    type: string
 
-    constructor(type: Type, name?: string) {
-        this.exportParams = getExportParams('Array', name)
-        this.type = type
+    constructor(example: T) {
+        this.type = typeof example
+        this.exportParams = getExportParams(this.type)
     }
 
     getName(): string {
@@ -28,18 +29,18 @@ export class ArrayType implements Type {
     getTypeDefinition(): string {
         return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            type: this.type.getName(),
+            type: this.type
         })
     }
 
     getTypeGuardDefinition(): string {
         return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            type: this.type.getName()
+            type: this.type
         })
     }
 
     getDependencies(): Type[] {
-        return [this.type]
+        return []
     }
 }

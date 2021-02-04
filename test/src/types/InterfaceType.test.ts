@@ -2,15 +2,20 @@ import {InterfaceType} from "../../../src"
 import {join} from 'path'
 import {readFileSync} from "fs";
 import {TestType} from "../../TestType";
+import Mustache = require("mustache");
+import {TEMPLATES_DIR} from "../../../src/util/constants";
 
-const FIXTURES_DIRECTORY = 'test/fixtures'
 const TYPE_NAME = 'MyInterfaceType'
 const PROPERTY_1 = 'property1'
-const TYPE_1 = new TestType('Type1')
+const PROPERTY_TYPE_1 = 'Type1'
+const TYPE_1 = new TestType(PROPERTY_TYPE_1, true)
 const PROPERTY_2 = 'property2'
-const TYPE_2 = new TestType('Type2')
-const TYPE_FILE_CONTENT = readFileSync(join(FIXTURES_DIRECTORY, TYPE_NAME + ".ts")).toString()
-const GENERATED_TYPE_NAME_REGEXP = new RegExp('^TTG_Anonymous_Interface_[0-9]+$')
+const PROPERTY_TYPE_2 = 'Type2'
+const TYPE_2 = new TestType(PROPERTY_TYPE_2, true)
+const GENERATED_TYPE_NAME_REGEXP = new RegExp('^__TTG_Anonymous_Interface_[0-9]+$')
+
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.guard.ts.mustache')).toString()
 
 describe('InterfaceType', () => {
     let instance: InterfaceType
@@ -22,15 +27,41 @@ describe('InterfaceType', () => {
     })
 
     it('should have the correct name', () => {
-        instance.name.should.equal(TYPE_NAME)
+        instance.getName().should.equal(TYPE_NAME)
     })
 
-    it('should have the correct type file content', () => {
-        instance.getTypeFileContent().should.equal(TYPE_FILE_CONTENT)
+    it('should be exported', () => {
+        instance.isExported().should.be.true
     })
 
-    it('should report the correct imports', () => {
-        instance.getTypeDependencies().should.eql([
+    it('should have the correct type definition', () => {
+        instance.getTypeDefinition().should.equal(Mustache.render(TYPE_DEFINITION_TEMPLATE, {
+            name: TYPE_NAME,
+            properties: [{
+                name: PROPERTY_1,
+                type: PROPERTY_TYPE_1,
+            }, {
+                name: PROPERTY_2,
+                type: PROPERTY_TYPE_2,
+            }],
+        }))
+    })
+
+    it('should have the correct type guard definition', () => {
+        instance.getTypeGuardDefinition().should.equal(Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
+            name: TYPE_NAME,
+            properties: [{
+                name: PROPERTY_1,
+                type: PROPERTY_TYPE_1,
+            }, {
+                name: PROPERTY_2,
+                type: PROPERTY_TYPE_2,
+            }],
+        }))
+    })
+
+    it('should report the correct dependencies', () => {
+        instance.getDependencies().should.eql([
             TYPE_1,
             TYPE_2
         ])
@@ -42,7 +73,11 @@ describe('InterfaceType', () => {
         })
 
         it('should have a generated name', () => {
-            instance.name.should.match(GENERATED_TYPE_NAME_REGEXP)
+            instance.getName().should.match(GENERATED_TYPE_NAME_REGEXP)
+        })
+
+        it('should not be exported', () => {
+            instance.isExported().should.be.false
         })
     })
 })

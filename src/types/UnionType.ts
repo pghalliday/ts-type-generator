@@ -3,18 +3,20 @@ import map from "lodash/map"
 import Mustache from "mustache";
 import {readFileSync} from "fs";
 import {join} from 'path'
-import {getName} from "../util/getName";
+import {ExportParams, getExportParams} from "../util/ExportParams";
 import {TEMPLATES_DIR} from "../util/constants";
 
 const UNION_SEPARATOR = ' | '
-const TYPE_FILE_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'UnionType.ts.mustache')).toString()
+
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'UnionType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'UnionType.guard.ts.mustache')).toString()
 
 export class UnionType implements Type {
-    name: string
+    exportParams: ExportParams
     types: Type[] = []
 
     constructor(name?: string) {
-        this.name = getName('Union', name)
+        this.exportParams = getExportParams('Union', name)
     }
 
     type(type: Type): UnionType {
@@ -22,15 +24,29 @@ export class UnionType implements Type {
         return this
     }
 
-    getTypeFileContent(): string {
-        return Mustache.render(TYPE_FILE_TEMPLATE, {
-            name: this.name,
-            values: map(this.types, type => type.name).join(UNION_SEPARATOR),
+    getName(): string {
+        return this.exportParams.name
+    }
+
+    isExported(): boolean {
+        return this.exportParams.exported
+    }
+
+    getTypeDefinition(): string {
+        return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
+            name: this.getName(),
+            types: map(this.types, type => type.getName()).join(UNION_SEPARATOR),
+        })
+    }
+
+    getTypeGuardDefinition(): string {
+        return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
+            name: this.getName(),
             types: this.types,
         })
     }
 
-    getTypeDependencies(): Type[] {
+    getDependencies(): Type[] {
         return this.types;
     }
 }

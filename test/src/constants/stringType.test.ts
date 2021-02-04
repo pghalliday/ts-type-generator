@@ -1,20 +1,38 @@
 import {stringType} from "../../../src";
 import {join} from 'path'
 import {readFileSync} from "fs";
-import {FILES_DIR} from "../../../src/util/constants";
+import {TEMPLATES_DIR} from "../../../src/util/constants";
+import Mustache = require("mustache");
 
-const TYPE_FILE_CONTENT = readFileSync(join(FILES_DIR, "StringType.ts")).toString()
+const GENERATED_TYPE_NAME_REGEXP = new RegExp('^__TTG_Anonymous_string_[0-9]+$')
+
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'PrimitiveType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'PrimitiveType.guard.ts.mustache')).toString()
 
 describe('stringType', () => {
     it('should have the correct name', () => {
-        stringType.name.should.equal("StringType")
+        stringType.getName().should.match(GENERATED_TYPE_NAME_REGEXP)
     })
 
-    it('should have the correct type file content', () => {
-        stringType.getTypeFileContent().should.equal(TYPE_FILE_CONTENT)
+    it('should not be exported', () => {
+        stringType.isExported().should.be.false
     })
 
-    it('should report the correct imports', () => {
-        stringType.getTypeDependencies().should.eql([])
+    it('should have the correct type definition', () => {
+        stringType.getTypeDefinition().should.equal(Mustache.render(TYPE_DEFINITION_TEMPLATE, {
+            name: stringType.getName(),
+            type: 'string',
+        }))
+    })
+
+    it('should have the correct type guard definition', () => {
+        stringType.getTypeGuardDefinition().should.equal(Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
+            name: stringType.getName(),
+            type: 'string',
+        }))
+    })
+
+    it('should report the correct dependencies', () => {
+        stringType.getDependencies().should.eql([])
     })
 })
