@@ -5,15 +5,15 @@ import {join} from "path";
 import {TEMPLATES_DIR} from "../util/constants";
 import Mustache from "mustache";
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ArrayType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ArrayType.guard.ts.mustache')).toString()
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'DictionaryType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'DictionaryType.guard.ts.mustache')).toString()
 
-export class ArrayType implements Type {
+export class DictionaryType implements Type {
     exportParams: ExportParams
     type: Type
 
     constructor(type: Type, name?: string) {
-        this.exportParams = getExportParams('Array', name)
+        this.exportParams = getExportParams('Dictionary', name)
         this.type = type
     }
 
@@ -35,7 +35,7 @@ export class ArrayType implements Type {
     getTypeGuardDefinition(): string {
         return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            type: this.type.getName()
+            type: this.type.getName(),
         })
     }
 

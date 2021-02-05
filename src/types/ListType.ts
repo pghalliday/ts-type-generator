@@ -5,15 +5,15 @@ import {join} from "path";
 import {TEMPLATES_DIR} from "../util/constants";
 import Mustache from "mustache";
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'MapType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'MapType.guard.ts.mustache')).toString()
+const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ListType.ts.mustache')).toString()
+const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ListType.guard.ts.mustache')).toString()
 
-export class MapType implements Type {
+export class ListType implements Type {
     exportParams: ExportParams
     type: Type
 
     constructor(type: Type, name?: string) {
-        this.exportParams = getExportParams('Map', name)
+        this.exportParams = getExportParams('List', name)
         this.type = type
     }
 
@@ -35,7 +35,7 @@ export class MapType implements Type {
     getTypeGuardDefinition(): string {
         return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            type: this.type.getName(),
+            type: this.type.getName()
         })
     }
 

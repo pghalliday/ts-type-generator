@@ -27,7 +27,7 @@ import {TsTypeGenerator} from "@pghalliday/ts-type-generator";
 
 new TsTypeGenerator()
     // TODO: add types here
-    .generate(resolve(__dirname, "../lib"));
+    .generate(resolve(__dirname, "../index.ts"));
 ```
 
 You can then run this using `ts-node`:
@@ -36,7 +36,7 @@ You can then run this using `ts-node`:
 ts-node ./types/src/index.ts
 ```
 
-As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/lib` directory and copy in some library files for use in generated type files.
+As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/index.ts` module and copy in some utility functions for use in generated type guards.
 
 ### Adding types
 
@@ -62,7 +62,7 @@ new TsTypeGenerator()
             .property("userId", stringType)
             .property("message", stringType)
     )
-    .generate(resolve(__dirname, "../lib"));
+    .generate(resolve(__dirname, "../index.ts"));
 ```
 
 This will generate 2 types equivalent to this:
@@ -91,30 +91,21 @@ export function isMessage(value: unknown): value is Message {
 }
 ```
 
-These will be generated in their own files under the output `lib` directory. As such you can import them like this:
+You can import them like this:
 
 ```typescript
-import {User, isUser} from './types/lib/User'
-import {Message, isMessage} from './types/lib/User'
+import {User, isUser, Message, isMessage} from "./types";
 ```
 
-So what's happening here. Well the main thing to know is that any number of types can be added and each type and the types they depend on will result in a generated type file.
+So what's happening here. Well the main thing to know is that any number of types can be added and each type, and the types they depend on, will be added to the generated types module.
 
-Types all have the same base `Type` class, so they can be used wherever a type is required.
+Types all have the same base `Type` class, so they can be re-used wherever a type is required.
 
-Some primitive types are provided as constants. Here we are using the `stringType` as an alias for `string`. We have to use an instance of `Type` so this has been created as a singleton. Using the `stringType` will result in a `String` type file being created with the following content:
-
-```typescript
-export type StringTypeTs = string;
-
-export function isStringType(value: unknown): value is StringTypeTs {
-    ...
-}
-```
+Some primitive types are provided as constants. Here we are using the `stringType` as an alias for `string`. We have to use an instance of `Type` so this has been created as a singleton for convenience.
 
 ### Anonymous types
 
-When defining types and sub types, you may not always care what they're called. As such, type names are always optional. As it happens, when the type file is generated, a name will also be generated but this is just an implementation detail.
+When defining types and sub-types, you may not always care what they are called. As such, type names are always optional. As it happens, when the type file is generated, a name will also be generated but this is an internal implementation detail. Anonymous types will not be exported from the types module.
 
 For example to create a more complex structure where we only care about the top level type name:
 
@@ -132,7 +123,7 @@ new TsTypeGenerator()
                     .property("lastName", stringType)
             )
     )
-    .generate(resolve(__dirname, "../lib"));
+    .generate(resolve(__dirname, "../index.ts"));
 ```
 
 Which will create a named type and type guard equivalent to:
@@ -153,22 +144,20 @@ export function isUser(value: unknown): value is User {
 
 ### Type constants
 
-The following `Type` constants are provided as primitive types:
+The following `Type` constants are provided as convenience primitive types:
 
 - `stringType` - the `string` primitive
 - `numberType` - the `number` primitive
 - `booleanType` - the `boolean` primitive
 
-The following are provided as convenience `Type` instances:
+The following `Type` constants are provided as convenience primitive collection instances:
 
-- `stringArrayType` - for arrays of `string` primitives
-- `stringMapType` - for maps of `string` primitives
-- `numberArrayType` - for arrays of `number` primitives
-- `numberMapType` - for maps of `number` primitives
-- `booleanArrayType` - for arrays of `boolean` primitives
-- `booleanMapType` - for maps of `boolean` primitives
-
-NB. Only maps keyed by `string` are supported.
+- `stringListType` - for lists of `string` primitives
+- `stringDictionaryType` - for dictionaries of `string` primitives
+- `numberListType` - for lists of `number` primitives
+- `numberDictionaryType` - for dictionaries of `number` primitives
+- `booleanListType` - for lists of `boolean` primitives
+- `booleanDictionaryType` - for dictionaries of `boolean` primitives
 
 ### Type classes
 
@@ -194,23 +183,21 @@ new UnionType(NAME?)
     ...
 ```
 
-#### `ArrayType`
+#### `ListType`
 
-To define an array type.
-
-```typescript
-new ArrayType(TYPE, NAME?)
-```
-
-#### `MapType`
-
-To define a map type.
+To define a list type.
 
 ```typescript
-new MapType(TYPE, NAME?)
+new ListType(TYPE, NAME?)
 ```
 
-NB. Only `string` keys are supported for maps.
+#### `DictionaryType`
+
+To define a dictionary type.
+
+```typescript
+new DictionaryType(TYPE, NAME?)
+```
 
 #### `StringLiteralType`
 

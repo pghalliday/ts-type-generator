@@ -10,7 +10,7 @@ import isUndefined from "lodash/isUndefined"
 import {readFileSync} from "fs";
 
 const HAS_OWN_PROPERTY_DEFINITION = readFileSync(join(FILES_DIR, 'hasOwnProperty.ts')).toString()
-const IS_MAP_OF_DEFINITION = readFileSync(join(FILES_DIR, 'isMapOf.ts')).toString()
+const IS_DICTIONARY_OF_DEFINITION = readFileSync(join(FILES_DIR, 'isDictionaryOf.ts')).toString()
 const EXPORT_PREFIX = 'export '
 
 function collectTypes(types: Type[], typeMap: Record<string, Type>): Record<string, Type> {
@@ -56,7 +56,7 @@ export class TsTypeGenerator {
             await file.write(type.getTypeGuardDefinition())
         }
         await file.write(HAS_OWN_PROPERTY_DEFINITION)
-        await file.write(IS_MAP_OF_DEFINITION)
+        await file.write(IS_DICTIONARY_OF_DEFINITION)
         await file.close()
     }
 }

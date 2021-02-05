@@ -13,7 +13,7 @@ const TYPES_FILE_NAME = 'types.ts'
 const OUTPUT_FILE = join(OUTPUT_DIRECTORY, TYPES_FILE_NAME)
 
 const HAS_OWN_PROPERTY_DEFINITION = readFileSync(join(FILES_DIR, 'hasOwnProperty.ts')).toString()
-const IS_MAP_OF_DEFINITION = readFileSync(join(FILES_DIR, 'isMapOf.ts')).toString()
+const IS_DICTIONARY_OF_DEFINITION = readFileSync(join(FILES_DIR, 'isDictionaryOf.ts')).toString()
 const EXPORT_PREFIX = 'export '
 
 const TYPE_1 = new TestType('Type1', true)
@@ -48,7 +48,7 @@ const EXPECTED_OUTPUT_FILE_CONTENT =
     TYPE_6.getTypeDefinition() +
     TYPE_6.getTypeGuardDefinition() +
     HAS_OWN_PROPERTY_DEFINITION +
-    IS_MAP_OF_DEFINITION
+    IS_DICTIONARY_OF_DEFINITION
 
 describe('TsTypeGenerator', () => {
     let instance: TsTypeGenerator
