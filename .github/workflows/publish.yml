@@ -19,7 +19,7 @@ jobs:
           node-version: 14.x
           registry-url: 'https://registry.npmjs.org'
 
-      - name: npm install, npm run build
+      - name: npm install, npm publish
         run: |
           npm ci
           npm publish --access public
