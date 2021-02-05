@@ -42,7 +42,7 @@ export class UnionType implements Type {
     getTypeGuardDefinition(): string {
         return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
             name: this.getName(),
-            types: this.types,
+            types: map(this.types, type => type.getName()),
         })
     }
 

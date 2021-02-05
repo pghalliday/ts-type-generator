@@ -47,8 +47,8 @@ describe('UnionType', () => {
             instance.getTypeGuardDefinition().should.equal(Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
                 name: TYPE_NAME,
                 types: [
-                    TYPE_1,
-                    TYPE_2,
+                    UNION_TYPE_NAME_1,
+                    UNION_TYPE_NAME_2,
                 ],
             }))
         })

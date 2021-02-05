@@ -1,6 +1,6 @@
 function is{{{name}}}(value: unknown): value is {{{name}}} {
     {{#types}}
-    if (is{{{name}}}(value)) return true;
+    if (is{{{.}}}(value)) return true;
     {{/types}}
     return false;
 }
