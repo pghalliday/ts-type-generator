@@ -20,17 +20,22 @@
   "main": "lib/index.js",
   "scripts": {
     "cmd:lint": "eslint . --ext .ts",
-    "cmd:test": "nyc mocha",
+    "cmd:test": "nyc mocha --config .mocharc.unit.json",
+    "cmd:integration-build": "ts-node test/integration/types/index.ts",
+    "cmd:integration-test": "mocha --config .mocharc.integration.json",
     "cmd:coverage": "nyc report -r text && nyc check-coverage",
     "cmd:build": "rimraf lib && tsc",
     "alarmist:lint": "chokidar \"+(src|test)/**/*\" -c \"alarmist-npm cmd:lint\"",
-    "alarmist:test": "chokidar \"+(src|test|files|templates)/**/*\" -c \"alarmist-npm cmd:test\"",
+    "alarmist:test": "chokidar \"+(src|files|templates)/**/*\" \"test/unit/**/*\" -c \"alarmist-npm cmd:test\"",
     "alarmist:coverage": "chokidar \"coverage/lcov.info\" -c \"alarmist-npm cmd:coverage\"",
     "alarmist:build": "chokidar \"src/**/*\" -c \"alarmist-npm cmd:build\"",
-    "start": "alarmist-monitor run-p alarmist:lint alarmist:test alarmist:coverage alarmist:build",
+    "alarmist:integration-build": "chokidar \"+(lib|files|templates)/**/*\" \"test/integration/types/**/*\" -c \"alarmist-npm cmd:integration-build\"",
+    "alarmist:integration-test": "chokidar \"test/integration/src/**/*\" -c \"alarmist-npm cmd:integration-test\"",
+    "start": "alarmist-monitor run-p alarmist:lint alarmist:test alarmist:coverage alarmist:build alarmist:integration-build alarmist:integration-test",
     "test": "run-s cmd:lint cmd:test cmd:coverage",
     "build": "run-s test cmd:build",
-    "prepublishOnly": "run-s build"
+    "integration": "run-s build cmd:integration-build cmd:integration-test",
+    "prepublishOnly": "run-s integration"
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",

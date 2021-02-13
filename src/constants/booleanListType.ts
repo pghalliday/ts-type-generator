@@ -1,4 +1,4 @@
-import {ListType} from "../types";
 import {booleanType} from "./booleanType";
+import {PrimitiveListType} from "../types/PrimitiveListType";
 
-export const booleanListType = new ListType(booleanType)
+export const booleanListType = new PrimitiveListType(booleanType)

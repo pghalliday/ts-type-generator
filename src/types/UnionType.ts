@@ -8,15 +8,20 @@ import {TEMPLATES_DIR} from "../util/constants";
 
 const UNION_SEPARATOR = ' | '
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'UnionType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'UnionType.guard.ts.mustache')).toString()
+const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'UnionType')
+const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
+const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
 
 export class UnionType implements Type {
-    exportParams: ExportParams
-    types: Type[] = []
+    private readonly exportParams: ExportParams
+    private readonly types: Type[] = []
 
     constructor(name?: string) {
         this.exportParams = getExportParams('Union', name)
+    }
+
+    private getTypeNames(): string {
+        return map(this.types, type => type.getTypeName()).join(UNION_SEPARATOR)
     }
 
     type(type: Type): UnionType {
@@ -24,25 +29,37 @@ export class UnionType implements Type {
         return this
     }
 
-    getName(): string {
-        return this.exportParams.name
-    }
-
     isExported(): boolean {
         return this.exportParams.exported
     }
 
-    getTypeDefinition(): string {
-        return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
-            name: this.getName(),
-            types: map(this.types, type => type.getName()).join(UNION_SEPARATOR),
-        })
+    getTypeName(): string {
+        if (this.isExported()) {
+            return this.exportParams.typeName
+        }
+        return this.getTypeNames()
     }
 
-    getTypeGuardDefinition(): string {
-        return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
-            name: this.getName(),
-            types: map(this.types, type => type.getName()),
+    getTypeCode(): string {
+        if (this.isExported()) {
+            return Mustache.render(TYPE_CODE, {
+                typeName: this.getTypeName(),
+                typeDef: this.getTypeNames(),
+            })
+        }
+        return ''
+    }
+
+    getTranslateName(): string {
+        return this.exportParams.translateName
+    }
+
+    getTranslateCode(): string {
+        return Mustache.render(TRANSLATE_CODE, {
+            typeName: this.getTypeName(),
+            typeNames: this.getTypeNames(),
+            translateName: this.getTranslateName(),
+            typeTranslateNames: map(this.types, type => type.getTranslateName()),
         })
     }
 

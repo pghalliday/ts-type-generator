@@ -5,37 +5,52 @@ import {join} from "path";
 import {TEMPLATES_DIR} from "../util/constants";
 import Mustache from "mustache";
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ListType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'ListType.guard.ts.mustache')).toString()
+const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'ListType')
+const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
+const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
 
 export class ListType implements Type {
-    exportParams: ExportParams
-    type: Type
+    private readonly exportParams: ExportParams
+    private readonly type: Type
 
     constructor(type: Type, name?: string) {
         this.exportParams = getExportParams('List', name)
         this.type = type
     }
 
-    getName(): string {
-        return this.exportParams.name
+    private getTypeDef(): string {
+        return `(${this.type.getTypeName()})[]`
     }
 
     isExported(): boolean {
         return this.exportParams.exported
     }
 
-    getTypeDefinition(): string {
-        return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
-            name: this.getName(),
-            type: this.type.getName(),
-        })
+    getTypeName(): string {
+        if (this.isExported()) {
+            return this.exportParams.typeName
+        }
+        return this.getTypeDef()
     }
 
-    getTypeGuardDefinition(): string {
-        return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
-            name: this.getName(),
-            type: this.type.getName()
+    getTypeCode(): string {
+        if (this.isExported()) {
+            return Mustache.render(TYPE_CODE, {
+                typeName: this.getTypeName(),
+                typeDef: this.getTypeDef(),
+            })
+        }
+        return ''
+    }
+
+    getTranslateName(): string {
+        return this.exportParams.translateName
+    }
+
+    getTranslateCode(): string {
+        return Mustache.render(TRANSLATE_CODE, {
+            translateName: this.getTranslateName(),
+            typeTranslateName: this.type.getTranslateName(),
         })
     }
 

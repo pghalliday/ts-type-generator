@@ -1,0 +1,12 @@
+function {{{translateName}}}(data: unknown): {{{typeName}}} | TTG_TranslationError {
+    if (!__TTG_isObject(data)) return new TTG_TranslationError("Not an object");
+{{#properties}}
+    const {{{propertyName}}} = __TTG_translateProperty(data, "{{{propertyName}}}", {{{propertyTranslateName}}});
+    if ({{{propertyName}}} instanceof TTG_TranslationError) return new TTG_TranslationError("Error encountered translating property: [{{{propertyName}}}]", {{{propertyName}}});
+{{/properties}}
+    return {
+{{#properties}}
+        {{{propertyName}}},
+{{/properties}}
+    };
+}

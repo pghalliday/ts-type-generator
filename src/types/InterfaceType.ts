@@ -3,23 +3,35 @@ import Mustache from "mustache";
 import {readFileSync} from "fs";
 import {join} from 'path'
 import map from 'lodash/map'
+import reduce from 'lodash/reduce'
 import {ExportParams, getExportParams} from "../util/ExportParams";
 import {TEMPLATES_DIR} from "../util/constants";
 
-const TYPE_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.ts.mustache')).toString()
-const TYPE_GUARD_DEFINITION_TEMPLATE = readFileSync(join(TEMPLATES_DIR, 'InterfaceType.guard.ts.mustache')).toString()
+const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'InterfaceType')
+const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
+const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
 
-interface Property {
-    name: string
-    type: Type
+type Property = {
+    name: string,
+    type: Type,
 }
 
 export class InterfaceType implements Type {
-    exportParams: ExportParams
-    properties: Property[] = []
+    private readonly exportParams: ExportParams
+    private readonly properties: Property[] = []
 
     constructor(name?: string) {
         this.exportParams = getExportParams('Interface', name)
+    }
+
+    private getTypeDef(): string {
+        return '{\n' +
+                reduce(
+                    this.properties,
+                    (properties, property) => properties + '    ' + property.name + ': ' + property.type.getTypeName() + ',\n',
+                    '',
+                ) +
+            '}'
     }
 
     property(name: string, type: Type): InterfaceType {
@@ -30,31 +42,39 @@ export class InterfaceType implements Type {
         return this
     }
 
-    getName(): string {
-        return this.exportParams.name
-    }
-
     isExported(): boolean {
         return this.exportParams.exported
     }
 
-    getTypeDefinition(): string {
-        return Mustache.render(TYPE_DEFINITION_TEMPLATE, {
-            name: this.getName(),
-            properties: map(this.properties, property => ({
-                name: property.name,
-                type: property.type.getName(),
-            })),
-        })
+    getTypeName(): string {
+        if (this.isExported()) {
+            return this.exportParams.typeName
+        }
+        return this.getTypeDef()
     }
 
-    getTypeGuardDefinition(): string {
-        return Mustache.render(TYPE_GUARD_DEFINITION_TEMPLATE, {
-            name: this.getName(),
+    getTypeCode(): string {
+        if (this.isExported()) {
+            return Mustache.render(TYPE_CODE, {
+                typeName: this.getTypeName(),
+                typeDef: this.getTypeDef(),
+            })
+        }
+        return ''
+    }
+
+    getTranslateName(): string {
+        return this.exportParams.translateName
+    }
+
+    getTranslateCode(): string {
+        return Mustache.render(TRANSLATE_CODE, {
+            typeName: this.getTypeName(),
+            translateName: this.getTranslateName(),
             properties: map(this.properties, property => ({
-                name: property.name,
-                type: property.type.getName(),
-            })),
+                propertyName: property.name,
+                propertyTranslateName: property.type.getTranslateName(),
+            }))
         })
     }
 

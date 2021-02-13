@@ -1,9 +1,0 @@
-function is{{{name}}}(value: unknown): value is {{{name}}} {
-    if (typeof value !== "object") return false;
-    if (value === null) return false;
-    {{#properties}}
-    if (!hasOwnProperty(value, "{{{name}}}")) return false;
-    if (!is{{{type}}}(value["{{{name}}}"])) return false;
-    {{/properties}}
-    return true;
-}

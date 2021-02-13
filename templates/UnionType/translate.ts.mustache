@@ -1,0 +1,8 @@
+function {{{translateName}}}(data: unknown): {{{typeName}}} | TTG_TranslationError {
+    let translated: {{{typeName}}} | TTG_TranslationError;
+{{#typeTranslateNames}}
+    translated = {{{.}}}(data);
+    if (!(translated instanceof TTG_TranslationError)) return translated;
+{{/typeTranslateNames}}
+    return new TTG_TranslationError('Type not in [{{{typeNames}}}]');
+}

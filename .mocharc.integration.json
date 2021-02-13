@@ -1,0 +1,9 @@
+{
+  "spec": "./test/integration/**/*.test.ts",
+  "recursive": true,
+  "require": [
+    "ts-node/register",
+    "source-map-support/register",
+    "./test/common.ts"
+  ]
+}

@@ -1,2 +1,2 @@
-import {PrimitiveType} from "./PrimitiveType";
+import {PrimitiveType} from "../types/PrimitiveType";
 export const numberType = new PrimitiveType<number>(0)

@@ -1,4 +1,4 @@
-import {DictionaryType} from "../types";
 import {numberType} from "./numberType";
+import {PrimitiveDictionaryType} from "../types/PrimitiveDictionaryType";
 
-export const numberDictionaryType = new DictionaryType(numberType)
+export const numberDictionaryType = new PrimitiveDictionaryType(numberType)

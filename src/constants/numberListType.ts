@@ -1,4 +1,4 @@
-import {ListType} from "../types";
 import {numberType} from "./numberType";
+import {PrimitiveListType} from "../types/PrimitiveListType";
 
-export const numberListType = new ListType(numberType)
+export const numberListType = new PrimitiveListType(numberType)

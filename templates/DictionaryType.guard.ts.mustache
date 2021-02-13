@@ -1,5 +1,0 @@
-function is{{{name}}}(value: unknown): value is {{{name}}} {
-    if (!(typeof value === "object")) return false;
-    if (value === null) return false;
-    return isDictionaryOf(value, is{{{type}}});
-}

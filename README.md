@@ -17,10 +17,10 @@ Install into your `devDependencies`:
 npm install --save-dev @pghalliday/ts-type-generator
 ```
 
-Then to get started create a `./types/src` directory and add an `index.ts` file to it with the following content:
+Then to get started create a `./types/src` directory and add an `True.test.ts` file to it with the following content:
 
 ```typescript
-// ./types/src/index.ts
+// ./types/types/index.ts
 
 import {resolve} from "path";
 import {TsTypeGenerator} from "@pghalliday/ts-type-generator";
@@ -33,10 +33,10 @@ new TsTypeGenerator()
 You can then run this using `ts-node`:
 
 ```shell
-ts-node ./types/src/index.ts
+ts-node ./types/types/index.ts
 ```
 
-As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/index.ts` module and copy in some utility functions for use in generated type guards.
+As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/True.test.ts` module and copy in some utility functions for use in generated type guards.
 
 ### Adding types
 
