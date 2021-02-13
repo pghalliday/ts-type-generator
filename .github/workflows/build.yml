@@ -28,7 +28,7 @@ jobs:
     - name: npm install, npm run build
       run: |
         npm ci
-        npm run build
+        npm run integration
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
