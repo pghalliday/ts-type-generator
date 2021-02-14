@@ -7,7 +7,7 @@ import {
     UnionType,
     ListType,
     DictionaryType,
-    InterfaceType,
+    StructType,
     booleanType,
     numberType,
     stringType,
@@ -45,7 +45,7 @@ try {
             'Dictionary',
         ))
         .type(
-            new InterfaceType('Interface')
+            new StructType('Struct')
                 .property('boolean', booleanType)
                 .property('number', numberType)
                 .property('string', stringType)

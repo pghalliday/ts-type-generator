@@ -1,5 +1,5 @@
 import {
-    translateInterface,
+    translateStruct,
     TTG_TranslationError,
 } from "./types";
 import {expect} from 'chai'
@@ -29,9 +29,9 @@ const VALUE: unknown = {
 }
 
 describe('TsTypeGenerator', () => {
-    describe('translateInterface', () => {
+    describe('translateStruct', () => {
         it('translate with an invalid value should return an error', () => {
-            const result = translateInterface("orange")
+            const result = translateStruct("orange")
             result.should.be.an.instanceOf(TTG_TranslationError)
             const error = <TTG_TranslationError> result
             error.message.should.equal('Not an object')
@@ -39,7 +39,7 @@ describe('TsTypeGenerator', () => {
         })
 
         it('translate with incomplete properties should return an error', () => {
-            const result = translateInterface({
+            const result = translateStruct({
                 boolean: true,
             })
             result.should.be.an.instanceOf(TTG_TranslationError)
@@ -52,7 +52,7 @@ describe('TsTypeGenerator', () => {
             const invalidValue = Object.assign({}, VALUE, {
                 boolean: 100,
             })
-            const result = translateInterface(invalidValue)
+            const result = translateStruct(invalidValue)
             result.should.be.an.instanceOf(TTG_TranslationError)
             const error = <TTG_TranslationError> result
             error.message.should.equal('Error encountered translating property: ["boolean"]')
@@ -62,7 +62,7 @@ describe('TsTypeGenerator', () => {
         })
 
         it('translate with a valid value should return a copy of the value', () => {
-            const result = translateInterface(VALUE)
+            const result = translateStruct(VALUE)
             result.should.not.equal(VALUE)
             result.should.eql(VALUE)
         })

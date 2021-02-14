@@ -1,4 +1,4 @@
-import {InterfaceType} from "../../../../src"
+import {StructType} from "../../../../src"
 import {join} from 'path'
 import {readFileSync} from "fs";
 import {TestType} from "../../TestType";
@@ -12,17 +12,17 @@ const TYPE_1 = new TestType(PROPERTY_TYPE_1, true)
 const PROPERTY_2 = 'property2'
 const PROPERTY_TYPE_2 = 'Type2'
 const TYPE_2 = new TestType(PROPERTY_TYPE_2, true)
-const GENERATED_TRANSLATE_NAME_REGEXP = new RegExp('^__TTG_Anonymous_translate_Interface_[0-9]+$')
+const GENERATED_TRANSLATE_NAME_REGEXP = new RegExp('^__TTG_Anonymous_translate_Struct_[0-9]+$')
 
-const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'InterfaceType')
+const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'StructType')
 const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
 const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
 
-describe('InterfaceType', () => {
-    let instance: InterfaceType
+describe('StructType', () => {
+    let instance: StructType
 
     beforeEach(async () => {
-        instance = new InterfaceType(TYPE_NAME)
+        instance = new StructType(TYPE_NAME)
             .property(PROPERTY_1, TYPE_1)
             .property(PROPERTY_2, TYPE_2)
     })
@@ -72,7 +72,7 @@ describe('InterfaceType', () => {
 
     describe('when anonymous', () => {
         beforeEach(async () => {
-            instance = new InterfaceType()
+            instance = new StructType()
                 .property(PROPERTY_1, TYPE_1)
                 .property(PROPERTY_2, TYPE_2)
         })
