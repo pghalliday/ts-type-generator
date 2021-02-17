@@ -1,0 +1,9 @@
+import * as Util from "../util";
+import * as Private from "../private";
+import * as Public from "../public";
+
+{{#isPublic}}
+export type {{{typeName}}} = {{{namespacedTypeDef}}};
+
+{{/isPublic}}
+export const {{{validatorName}}} = Util.validateList({{{typeValidatorName}}});

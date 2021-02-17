@@ -1,8 +1,10 @@
 {
   "all": true,
   "include": [
-    "files/**/*.ts",
     "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/TsTypeGenerator.ts"
   ],
   "check-coverage": false,
   "lines": 100,

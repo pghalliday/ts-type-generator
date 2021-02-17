@@ -1,57 +1,44 @@
-import {join} from "path"
 import {Type} from "./util/Type";
-import {FILES_DIR} from "./util/constants";
-import reduce from "lodash/reduce"
-import sortBy from "lodash/sortBy"
-import values from "lodash/values"
-import isUndefined from "lodash/isUndefined"
-import {readFileSync} from "fs";
+import {FILES_DIR, VALIDATION_DIR} from "./util/constants";
+import flatMap from "lodash/flatMap"
+import {close, copy, open} from "fs-extra";
+import {join} from 'path'
 
-const COMMON_CODE = readFileSync(join(FILES_DIR, 'common.ts')).toString()
-const EXPORT_PREFIX = 'export '
+type Collection = {
+    name: string,
+    type: Type,
+}
 
-function collectTypes(types: Type[], typeMap: Record<string, Type>): Record<string, Type> {
-    return reduce(types, (typeMap, type) => {
-        if (isUndefined(typeMap[type.getTypeName()])) {
-            typeMap[type.getTypeName()] = type;
-            return collectTypes(type.getDependencies(), typeMap);
-        } else {
-            if (typeMap[type.getTypeName()] !== type) {
-                throw new Error(`Type: [${type.getTypeName()}] has been redefined`)
-            }
-        }
-        return typeMap
-    }, typeMap)
+function collectTypes(types: Type[]): Type[] {
+    return flatMap(types, type => [type].concat(collectTypes(type.getDependencies())))
 }
 
 export class TsTypeGenerator {
     private readonly types: Type[] = []
+    private readonly collections: Collection[] = []
 
     type(type: Type): TsTypeGenerator {
         this.types.push(type)
         return this
     }
 
-    generate(): string {
-        const types = sortBy(
-            values(collectTypes(this.types, {})),
-            [
-                type => !(type.isExported()),
-                type => type.getTypeName(),
-            ],
-        )
-        let code = ''
+    collection(name: string, type: Type): TsTypeGenerator {
+        this.collections.push({
+            name,
+            type,
+        })
+        return this
+    }
+
+    async generate(outputDir: string): Promise<void> {
+        const types = collectTypes(this.types)
+        await copy(FILES_DIR, outputDir)
+        const privateValidationExports = await open(join(outputDir, VALIDATION_DIR, 'private.ts'), 'w')
+        const publicValidationExports = await open(join(outputDir, VALIDATION_DIR, 'public.ts'), 'w')
         for (const type of types) {
-            if (type.isExported()) {
-                code += EXPORT_PREFIX
-            }
-            code += type.getTypeCode()
-            if (type.isExported()) {
-                code += EXPORT_PREFIX
-            }
-            code += type.getTranslateCode()
+            await type.writeValidationCode(outputDir, privateValidationExports, publicValidationExports)
         }
-        code += COMMON_CODE
-        return code
+        await close(privateValidationExports)
+        await close(publicValidationExports)
     }
 }

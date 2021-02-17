@@ -1,8 +1,8 @@
 export interface Type {
-    isExported(): boolean
-    getTypeName(): string
-    getTypeCode(): string
-    getTranslateName(): string
-    getTranslateCode(): string
+    getValidationTypeName(): string
+    getNamespacedValidationTypeName(): string
+    getValidatorName(): string
+    getNamespacedValidatorName(): string
+    writeValidationCode(outputDir: string, privateExports: number, publicExports: number): Promise<void>
     getDependencies(): Type[]
 }

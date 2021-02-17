@@ -4,12 +4,12 @@ import {readFileSync} from "fs";
 import {join} from 'path'
 import map from 'lodash/map'
 import reduce from 'lodash/reduce'
-import {ExportParams, getExportParams} from "../util/ExportParams";
-import {TEMPLATES_DIR} from "../util/constants";
+import {AccessParams} from "../util/AccessParams";
+import {PRIVATE_DIR, PUBLIC_DIR, TEMPLATES_DIR, VALIDATION_DIR} from "../util/constants";
+import {outputFile, write} from "fs-extra";
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'StructType')
-const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
-const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
+const VALIDATION_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validation.ts.mustache')).toString()
 
 type Property = {
     name: string,
@@ -17,20 +17,30 @@ type Property = {
 }
 
 export class StructType implements Type {
-    private readonly exportParams: ExportParams
+    private readonly accessParams: AccessParams
     private readonly properties: Property[] = []
 
     constructor(name?: string) {
-        this.exportParams = getExportParams('Struct', name)
+        this.accessParams = new AccessParams('Struct', name)
     }
 
     private getTypeDef(): string {
         return '{\n' +
-                reduce(
-                    this.properties,
-                    (properties, property) => properties + '    ' + property.name + ': ' + property.type.getTypeName() + ',\n',
-                    '',
-                ) +
+            reduce(
+                this.properties,
+                (properties, property) => properties + '    ' + property.name + ': ' + property.type.getValidationTypeName() + ',\n',
+                '',
+            ) +
+            '}'
+    }
+
+    private getNamespacedTypeDef(): string {
+        return '{\n' +
+            reduce(
+                this.properties,
+                (properties, property) => properties + '    ' + property.name + ': ' + property.type.getNamespacedValidationTypeName() + ',\n',
+                '',
+            ) +
             '}'
     }
 
@@ -42,40 +52,47 @@ export class StructType implements Type {
         return this
     }
 
-    isExported(): boolean {
-        return this.exportParams.exported
+    private isPublic(): boolean {
+        return this.accessParams.public
     }
 
-    getTypeName(): string {
-        if (this.isExported()) {
-            return this.exportParams.typeName
+    getValidationTypeName(): string {
+        if (this.isPublic()) {
+            return this.accessParams.name
         }
         return this.getTypeDef()
     }
 
-    getTypeCode(): string {
-        if (this.isExported()) {
-            return Mustache.render(TYPE_CODE, {
-                typeName: this.getTypeName(),
-                typeDef: this.getTypeDef(),
-            })
+    getNamespacedValidationTypeName(): string {
+        if (this.isPublic()) {
+            return `Public.${this.accessParams.name}`
         }
-        return ''
+        return this.getNamespacedTypeDef()
     }
 
-    getTranslateName(): string {
-        return this.exportParams.translateName
+    getValidatorName(): string {
+        return `validate${this.accessParams.name}`
     }
 
-    getTranslateCode(): string {
-        return Mustache.render(TRANSLATE_CODE, {
-            typeName: this.getTypeName(),
-            translateName: this.getTranslateName(),
+    getNamespacedValidatorName(): string {
+        return this.isPublic()? `Public.${this.getValidatorName()}` :  `Private.${this.getValidatorName()}`
+    }
+
+    /* istanbul ignore next */
+    async writeValidationCode(outputDir: string, privateExports: number, publicExports: number): Promise<void> {
+        const exports = this.isPublic() ? publicExports : privateExports
+        const importPath = join(this.isPublic() ? PUBLIC_DIR : PRIVATE_DIR, this.accessParams.name)
+        await outputFile(join(outputDir, VALIDATION_DIR, `${importPath}.ts`), Mustache.render(VALIDATION_CODE, {
+            isPublic: this.isPublic(),
+            namespacedTypeDef: this.getNamespacedTypeDef(),
+            typeName: this.isPublic() ? this.getValidationTypeName() : this.getNamespacedTypeDef(),
+            validatorName: this.getValidatorName(),
             properties: map(this.properties, property => ({
                 propertyName: property.name,
-                propertyTranslateName: property.type.getTranslateName(),
-            }))
-        })
+                propertyValidatorName: property.type.getNamespacedValidatorName(),
+            })),
+        }))
+        await write(exports, `export * from "./${importPath}";\n`)
     }
 
     getDependencies(): Type[] {

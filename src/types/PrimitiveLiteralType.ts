@@ -1,15 +1,15 @@
 import {Type} from "../util/Type";
-import {ExportParams, getExportParams} from "../util/ExportParams";
+import {AccessParams} from "../util/AccessParams";
 import {readFileSync} from "fs";
 import {join} from "path";
-import {TEMPLATES_DIR} from "../util/constants";
+import {PRIVATE_DIR, PUBLIC_DIR, TEMPLATES_DIR, VALIDATION_DIR} from "../util/constants";
 import Mustache from "mustache";
 import {Primitive} from "../util/Primitive";
 import {booleanType, numberType, stringType} from "../constants";
+import {outputFile, write} from "fs-extra";
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'PrimitiveLiteralType')
-const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
-const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
+const VALIDATION_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validation.ts.mustache')).toString()
 
 const PRIMITIVE_TYPES: {[key: string]: Type} = {
     boolean: booleanType,
@@ -19,48 +19,58 @@ const PRIMITIVE_TYPES: {[key: string]: Type} = {
 
 export class PrimitiveLiteralType<T extends Primitive> implements Type {
     private readonly type: Type
-    private readonly exportParams: ExportParams;
-    private readonly value: T;
+    private readonly accessParams: AccessParams
+    private readonly value: T
 
     constructor(value: T, name?: string) {
         this.type = PRIMITIVE_TYPES[typeof value]
-        this.exportParams = getExportParams(typeof value + 'Literal', name)
+        this.accessParams = new AccessParams(typeof value + 'Literal', name)
         this.value = value
     }
 
-    isExported(): boolean {
-        return this.exportParams.exported
-    }
-
-    getTypeName(): string {
-        if (this.isExported()) {
-            return this.exportParams.typeName
-        }
+    private getValue(): string {
         return JSON.stringify(this.value)
     }
 
-    getTypeCode(): string {
-        if (this.isExported()) {
-            return Mustache.render(TYPE_CODE, {
-                typeName: this.getTypeName(),
-                typeDef: JSON.stringify(this.value),
-            })
+    private isPublic(): boolean {
+        return this.accessParams.public;
+    }
+
+    getValidationTypeName(): string {
+        if (this.isPublic()) {
+            return this.accessParams.name
         }
-        return ''
+        return this.getValue()
     }
 
-    getTranslateName(): string {
-        return this.exportParams.translateName
+    getNamespacedValidationTypeName(): string {
+        if (this.isPublic()) {
+            return `Public.${this.accessParams.name}`
+        }
+        return this.getValue()
     }
 
-    getTranslateCode(): string {
-        return Mustache.render(TRANSLATE_CODE, {
-            typeName: this.getTypeName(),
-            translateName: this.getTranslateName(),
-            value: JSON.stringify(this.value),
-            valueTypeName: this.type.getTypeName(),
-            valueTranslateName: this.type.getTranslateName(),
-        })
+    getValidatorName(): string {
+        return `validate${this.accessParams.name}`;
+    }
+
+    getNamespacedValidatorName(): string {
+        return this.isPublic()? `Public.${this.getValidatorName()}` :  `Private.${this.getValidatorName()}`
+    }
+
+    /* istanbul ignore next */
+    async writeValidationCode(outputDir: string, privateExports: number, publicExports: number): Promise<void> {
+        const exports = this.isPublic() ? publicExports : privateExports
+        const importPath = join(this.isPublic() ? PUBLIC_DIR : PRIVATE_DIR, this.accessParams.name)
+        await outputFile(join(outputDir, VALIDATION_DIR, `${importPath}.ts`), Mustache.render(VALIDATION_CODE, {
+            isPublic: this.isPublic(),
+            typeName: this.getValidationTypeName(),
+            validatorName: this.getValidatorName(),
+            value: this.getValue(),
+            valueValidatorName: this.type.getNamespacedValidatorName(),
+            valueTypeName: this.type.getNamespacedValidationTypeName(),
+        }))
+        await write(exports, `export * from "./${importPath}";\n`)
     }
 
     getDependencies(): Type[] {

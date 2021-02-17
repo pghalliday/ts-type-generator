@@ -1,57 +1,69 @@
 import {Type} from "../util/Type";
-import {ExportParams, getExportParams} from "../util/ExportParams";
+import {AccessParams} from "../util/AccessParams";
 import {readFileSync} from "fs";
 import {join} from "path";
-import {TEMPLATES_DIR} from "../util/constants";
+import {PRIVATE_DIR, PUBLIC_DIR, TEMPLATES_DIR, VALIDATION_DIR} from "../util/constants";
 import Mustache from "mustache";
+import {outputFile, write} from "fs-extra";
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'ListType')
-const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
-const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
+const VALIDATION_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validation.ts.mustache')).toString()
 
 export class ListType implements Type {
-    private readonly exportParams: ExportParams
+    private readonly accessParams: AccessParams
     private readonly type: Type
 
     constructor(type: Type, name?: string) {
-        this.exportParams = getExportParams('List', name)
+        this.accessParams = new AccessParams('List', name)
         this.type = type
     }
 
     private getTypeDef(): string {
-        return `(${this.type.getTypeName()})[]`
+        return `(${this.type.getValidationTypeName()})[]`
     }
 
-    isExported(): boolean {
-        return this.exportParams.exported
+    private getNamespacedTypeDef(): string {
+        return `(${this.type.getNamespacedValidationTypeName()})[]`
     }
 
-    getTypeName(): string {
-        if (this.isExported()) {
-            return this.exportParams.typeName
+    private isPublic(): boolean {
+        return this.accessParams.public
+    }
+
+    getValidationTypeName(): string {
+        if (this.isPublic()) {
+            return this.accessParams.name
         }
         return this.getTypeDef()
     }
 
-    getTypeCode(): string {
-        if (this.isExported()) {
-            return Mustache.render(TYPE_CODE, {
-                typeName: this.getTypeName(),
-                typeDef: this.getTypeDef(),
-            })
+    getNamespacedValidationTypeName(): string {
+        if (this.isPublic()) {
+            return `Public.${this.accessParams.name}`
         }
-        return ''
+        return this.getNamespacedTypeDef()
     }
 
-    getTranslateName(): string {
-        return this.exportParams.translateName
+    getValidatorName(): string {
+        return `validate${this.accessParams.name}`
     }
 
-    getTranslateCode(): string {
-        return Mustache.render(TRANSLATE_CODE, {
-            translateName: this.getTranslateName(),
-            typeTranslateName: this.type.getTranslateName(),
-        })
+    getNamespacedValidatorName(): string {
+        return this.isPublic()? `Public.${this.getValidatorName()}` :  `Private.${this.getValidatorName()}`
+    }
+
+    /* istanbul ignore next */
+    async writeValidationCode(outputDir: string, privateExports: number, publicExports: number): Promise<void> {
+        const exports = this.isPublic() ? publicExports : privateExports
+        const importPath = join(this.isPublic() ? PUBLIC_DIR : PRIVATE_DIR, this.accessParams.name)
+        await outputFile(join(outputDir, VALIDATION_DIR, `${importPath}.ts`), Mustache.render(VALIDATION_CODE, {
+            isPublic: this.isPublic(),
+            typeName: this.isPublic() ? this.getValidationTypeName() : this.getNamespacedTypeDef(),
+            namespacedTypeDef: this.getNamespacedTypeDef(),
+            validatorName: this.getValidatorName(),
+            typeValidatorName: this.type.getNamespacedValidatorName(),
+        }))
+        await write(exports, `export * from "./${importPath}";\n`)
     }
 
     getDependencies(): Type[] {

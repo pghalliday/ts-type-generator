@@ -3,25 +3,29 @@ import map from "lodash/map"
 import Mustache from "mustache";
 import {readFileSync} from "fs";
 import {join} from 'path'
-import {ExportParams, getExportParams} from "../util/ExportParams";
-import {TEMPLATES_DIR} from "../util/constants";
+import {AccessParams} from "../util/AccessParams";
+import {PRIVATE_DIR, PUBLIC_DIR, TEMPLATES_DIR, VALIDATION_DIR} from "../util/constants";
+import {outputFile, write} from "fs-extra";
 
 const UNION_SEPARATOR = ' | '
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'UnionType')
-const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
-const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
+const VALIDATION_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validation.ts.mustache')).toString()
 
 export class UnionType implements Type {
-    private readonly exportParams: ExportParams
+    private readonly accessParams: AccessParams
     private readonly types: Type[] = []
 
     constructor(name?: string) {
-        this.exportParams = getExportParams('Union', name)
+        this.accessParams = new AccessParams('Union', name)
     }
 
-    private getTypeNames(): string {
-        return map(this.types, type => type.getTypeName()).join(UNION_SEPARATOR)
+    private getTypeDef(): string {
+        return map(this.types, type => type.getValidationTypeName()).join(UNION_SEPARATOR)
+    }
+
+    private getNamespacedTypeDef(): string {
+        return map(this.types, type => type.getNamespacedValidationTypeName()).join(UNION_SEPARATOR)
     }
 
     type(type: Type): UnionType {
@@ -29,38 +33,45 @@ export class UnionType implements Type {
         return this
     }
 
-    isExported(): boolean {
-        return this.exportParams.exported
+    private isPublic(): boolean {
+        return this.accessParams.public
     }
 
-    getTypeName(): string {
-        if (this.isExported()) {
-            return this.exportParams.typeName
+    getValidationTypeName(): string {
+        if (this.isPublic()) {
+            return this.accessParams.name
         }
-        return this.getTypeNames()
+        return this.getTypeDef()
     }
 
-    getTypeCode(): string {
-        if (this.isExported()) {
-            return Mustache.render(TYPE_CODE, {
-                typeName: this.getTypeName(),
-                typeDef: this.getTypeNames(),
-            })
+    getNamespacedValidationTypeName(): string {
+        if (this.isPublic()) {
+            return `Public.${this.accessParams.name}`
         }
-        return ''
+        return this.getNamespacedTypeDef()
     }
 
-    getTranslateName(): string {
-        return this.exportParams.translateName
+    getValidatorName(): string {
+        return `validate${this.accessParams.name}`
     }
 
-    getTranslateCode(): string {
-        return Mustache.render(TRANSLATE_CODE, {
-            typeName: this.getTypeName(),
-            typeNames: this.getTypeNames(),
-            translateName: this.getTranslateName(),
-            typeTranslateNames: map(this.types, type => type.getTranslateName()),
-        })
+    getNamespacedValidatorName(): string {
+        return this.isPublic()? `Public.${this.getValidatorName()}` :  `Private.${this.getValidatorName()}`
+    }
+
+    /* istanbul ignore next */
+    async writeValidationCode(outputDir: string, privateExports: number, publicExports: number): Promise<void> {
+        const exports = this.isPublic() ? publicExports : privateExports
+        const importPath = join(this.isPublic() ? PUBLIC_DIR : PRIVATE_DIR, this.accessParams.name)
+        await outputFile(join(outputDir, VALIDATION_DIR, `${importPath}.ts`), Mustache.render(VALIDATION_CODE, {
+            isPublic: this.isPublic(),
+            typeDef: this.getTypeDef(),
+            namespacedTypeDef: this.getNamespacedTypeDef(),
+            typeName: this.isPublic() ? this.getValidationTypeName() : this.getNamespacedTypeDef(),
+            validatorName: this.getValidatorName(),
+            typeValidatorNames: map(this.types, type => type.getNamespacedValidatorName())
+        }))
+        await write(exports, `export * from "./${importPath}";\n`)
     }
 
     getDependencies(): Type[] {

@@ -1,6 +1,0 @@
-function {{{translateName}}}(data: unknown): {{{typeName}}} | TTG_TranslationError {
-    const value = {{{valueTranslateName}}}(data);
-    if (value instanceof TTG_TranslationError) return new TTG_TranslationError('Error encountered translating: [{{{valueTypeName}}}]', value);
-    if (value === {{{value}}}) return value;
-    return new TTG_TranslationError('Not [{{{value}}}]');
-}

@@ -1,41 +1,45 @@
 import {Type} from "../util/Type";
 import {Primitive} from "../util/Primitive";
 import {join} from "path";
-import {TEMPLATES_DIR} from "../util/constants";
+import {PRIVATE_DIR, TEMPLATES_DIR, VALIDATION_DIR} from "../util/constants";
 import {readFileSync} from "fs";
 import Mustache from "mustache";
+import {outputFile, write} from "fs-extra";
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'PrimitiveType')
-const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
+const VALIDATION_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validation.ts.mustache')).toString()
 
 export class PrimitiveType<T extends Primitive> implements Type {
-    private readonly type: string
+    private readonly validationTypeName: string
 
     constructor(example: T) {
-        this.type = typeof example
+        this.validationTypeName = typeof example
     }
 
-    isExported(): boolean {
-        return false
+    getValidationTypeName(): string {
+        return this.validationTypeName
     }
 
-    getTypeName(): string {
-        return this.type
+    getNamespacedValidationTypeName(): string {
+        return this.getValidationTypeName()
     }
 
-    getTypeCode(): string {
-        return '';
+    getValidatorName(): string {
+        return `validate_${this.getValidationTypeName()}`
     }
 
-    getTranslateName(): string {
-        return `__TTG_translate_${this.getTypeName()}`;
+    getNamespacedValidatorName(): string {
+        return `Private.${this.getValidatorName()}`
     }
 
-    getTranslateCode(): string {
-        return Mustache.render(TRANSLATE_CODE, {
-            typeName: this.getTypeName(),
-            translateName: this.getTranslateName(),
-        })
+    /* istanbul ignore next */
+    async writeValidationCode(outputDir: string, privateExports: number): Promise<void> {
+        const importPath = join(PRIVATE_DIR, this.getValidationTypeName())
+        await outputFile(join(outputDir, VALIDATION_DIR, `${importPath}.ts`), Mustache.render(VALIDATION_CODE, {
+            validatorName: this.getValidatorName(),
+            typeName: this.getValidationTypeName(),
+        }))
+        await write(privateExports, `export * from "./${importPath}";\n`)
     }
 
     getDependencies(): Type[] {

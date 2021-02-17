@@ -1,9 +1,5 @@
 import {StructType} from "../../../../src"
-import {join} from 'path'
-import {readFileSync} from "fs";
 import {TestType} from "../../TestType";
-import Mustache = require("mustache");
-import {TEMPLATES_DIR} from "../../../../src/util/constants";
 
 const TYPE_NAME = 'MyInterfaceType'
 const PROPERTY_1 = 'property1'
@@ -12,11 +8,7 @@ const TYPE_1 = new TestType(PROPERTY_TYPE_1, true)
 const PROPERTY_2 = 'property2'
 const PROPERTY_TYPE_2 = 'Type2'
 const TYPE_2 = new TestType(PROPERTY_TYPE_2, true)
-const GENERATED_TRANSLATE_NAME_REGEXP = new RegExp('^__TTG_Anonymous_translate_Struct_[0-9]+$')
-
-const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'StructType')
-const TYPE_CODE = readFileSync(join(TEMPLATES_DIR, 'type.ts.mustache')).toString()
-const TRANSLATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'translate.ts.mustache')).toString()
+const GENERATED_VALIDATOR_NAME_REGEXP = new RegExp('^validateStruct_[0-9]+$')
 
 describe('StructType', () => {
     let instance: StructType
@@ -27,40 +19,20 @@ describe('StructType', () => {
             .property(PROPERTY_2, TYPE_2)
     })
 
-    it('should be exported', () => {
-        instance.isExported().should.be.true
+    it('should have the correct validation type name', () => {
+        instance.getValidationTypeName().should.equal(TYPE_NAME)
     })
 
-    it('should have the correct type name', () => {
-        instance.getTypeName().should.equal(TYPE_NAME)
+    it('should have the correct namespaced validation type name', () => {
+        instance.getNamespacedValidationTypeName().should.equal(`Public.${instance.getValidationTypeName()}`)
     })
 
-    it('should generate the correct type code', () => {
-        instance.getTypeCode().should.equal(Mustache.render(TYPE_CODE, {
-            typeName: instance.getTypeName(),
-            typeDef: `{
-    ${PROPERTY_1}: ${TYPE_1.getTypeName()},
-    ${PROPERTY_2}: ${TYPE_2.getTypeName()},
-}`,
-        }))
+    it('should have the correct validator name', () => {
+        instance.getValidatorName().should.equal(`validate${instance.getValidationTypeName()}`)
     })
 
-    it('should have the correct translate name', () => {
-        instance.getTranslateName().should.equal(`translate${instance.getTypeName()}`)
-    })
-
-    it('should generate the correct translate code', () => {
-        instance.getTranslateCode().should.equal(Mustache.render(TRANSLATE_CODE, {
-            typeName: instance.getTypeName(),
-            translateName: instance.getTranslateName(),
-            properties: [{
-                propertyName: PROPERTY_1,
-                propertyTranslateName: TYPE_1.getTranslateName(),
-            }, {
-                propertyName: PROPERTY_2,
-                propertyTranslateName: TYPE_2.getTranslateName(),
-            }]
-        }))
+    it('should have the correct namespaced validator name', () => {
+        instance.getNamespacedValidatorName().should.equal(`Public.${instance.getValidatorName()}`)
     })
 
     it('should report the correct dependencies', () => {
@@ -77,23 +49,26 @@ describe('StructType', () => {
                 .property(PROPERTY_2, TYPE_2)
         })
 
-        it('should use the type def for the type name', () => {
-            instance.getTypeName().should.equal(`{
-    ${PROPERTY_1}: ${TYPE_1.getTypeName()},
-    ${PROPERTY_2}: ${TYPE_2.getTypeName()},
+        it('should use the type def for the validation type name', () => {
+            instance.getValidationTypeName().should.equal(`{
+    ${PROPERTY_1}: ${TYPE_1.getValidationTypeName()},
+    ${PROPERTY_2}: ${TYPE_2.getValidationTypeName()},
 }`)
         })
 
-        it('should not generate type code', () => {
-            instance.getTypeCode().should.equal('')
+        it('should use the namespaced type def for the validation namespaced type name', () => {
+            instance.getNamespacedValidationTypeName().should.equal(`{
+    ${PROPERTY_1}: ${TYPE_1.getNamespacedValidationTypeName()},
+    ${PROPERTY_2}: ${TYPE_2.getNamespacedValidationTypeName()},
+}`)
         })
 
-        it('should have a generated translate name', () => {
-            instance.getTranslateName().should.match(GENERATED_TRANSLATE_NAME_REGEXP)
+        it('should have a generated validator name', () => {
+            instance.getValidatorName().should.match(GENERATED_VALIDATOR_NAME_REGEXP)
         })
 
-        it('should not be exported', () => {
-            instance.isExported().should.be.false
+        it('should have the correct namespaced validator name', () => {
+            instance.getNamespacedValidatorName().should.equal(`Private.${instance.getValidatorName()}`)
         })
     })
 })
