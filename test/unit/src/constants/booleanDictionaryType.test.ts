@@ -2,11 +2,11 @@ import {booleanDictionaryType, booleanType} from "../../../../src"
 
 describe('booleanDictionaryType', () => {
     it('should have the correct validation type name', () => {
-        booleanDictionaryType.getValidationTypeName().should.equal('{[key: string]: boolean}')
+        booleanDictionaryType.getTypeName().should.equal('{[key: string]: boolean}')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        booleanDictionaryType.getNamespacedValidationTypeName().should.equal('{[key: string]: boolean}')
+        booleanDictionaryType.getNamespacedTypeName().should.equal('{[key: string]: boolean}')
     })
 
     it('should have the correct validator name', () => {

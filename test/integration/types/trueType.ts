@@ -1,3 +1,3 @@
-import {BooleanLiteralType} from "../../../lib";
+import {LiteralType} from "../../../lib";
 
-export const trueType = new BooleanLiteralType(true, 'True')
+export const trueType = new LiteralType<boolean>('True', true)

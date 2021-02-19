@@ -4,8 +4,8 @@ import {TestType} from "../../TestType";
 const TYPE_NAME = 'MyUnionType'
 const TYPE_NAME_1 = 'Type1'
 const TYPE_NAME_2 = 'Type2'
-const TYPE_1 = new TestType(TYPE_NAME_1, true)
-const TYPE_2 = new TestType(TYPE_NAME_2, true)
+const TYPE_1 = new TestType(TYPE_NAME_1)
+const TYPE_2 = new TestType(TYPE_NAME_2)
 const GENERATED_VALIDATOR_NAME_REGEXP = new RegExp('^validateUnion_[0-9]+$')
 
 describe('UnionType', () => {
@@ -19,15 +19,15 @@ describe('UnionType', () => {
         })
 
         it('should have the correct validation type name', () => {
-            instance.getValidationTypeName().should.equal(TYPE_NAME)
+            instance.getTypeName().should.equal(TYPE_NAME)
         })
 
         it('should have the correct namespaced validation type name', () => {
-            instance.getNamespacedValidationTypeName().should.equal(`Public.${instance.getValidationTypeName()}`)
+            instance.getNamespacedTypeName().should.equal(`Public.${instance.getTypeName()}`)
         })
 
         it('should have the correct validator name', () => {
-            instance.getValidatorName().should.equal(`validate${instance.getValidationTypeName()}`)
+            instance.getValidatorName().should.equal(`validate${instance.getTypeName()}`)
         })
 
         it('should have the correct namespaced validator name', () => {
@@ -50,11 +50,11 @@ describe('UnionType', () => {
         })
 
         it('should have the type union as its validation type name', () => {
-            instance.getValidationTypeName().should.equal([TYPE_1.getValidationTypeName(), TYPE_2.getValidationTypeName()].join(' | '))
+            instance.getTypeName().should.equal([TYPE_1.getTypeName(), TYPE_2.getTypeName()].join(' | '))
         })
 
         it('should have the namespaced type union as its namespaced validation type name', () => {
-            instance.getNamespacedValidationTypeName().should.equal([TYPE_1.getNamespacedValidationTypeName(), TYPE_2.getNamespacedValidationTypeName()].join(' | '))
+            instance.getNamespacedTypeName().should.equal([TYPE_1.getNamespacedTypeName(), TYPE_2.getNamespacedTypeName()].join(' | '))
         })
 
         it('should have a generated validator name', () => {

@@ -1,7 +1,7 @@
 import {
-    Types,
+    Validated,
     ValidationError,
-} from "./types/validation";
+} from "./types";
 import {expect} from 'chai'
 
 const VALUE: unknown = {
@@ -32,7 +32,7 @@ describe('Types', () => {
     describe('validateStruct', () => {
         describe('with an invalid value', function () {
             it('should return an error`', () => {
-                const result = Types.validateStruct("orange")
+                const result = Validated.validate_Struct("orange")
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not an object')
@@ -42,7 +42,7 @@ describe('Types', () => {
 
         describe('with incomplete properties', () => {
             it('should return an error', () => {
-                const result = Types.validateStruct({
+                const result = Validated.validate_Struct({
                     boolean: true,
                 })
                 result.should.be.an.instanceOf(ValidationError)
@@ -57,7 +57,7 @@ describe('Types', () => {
                 const invalidValue = Object.assign({}, VALUE, {
                     boolean: 100,
                 })
-                const result = Types.validateStruct(invalidValue)
+                const result = Validated.validate_Struct(invalidValue)
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Error encountered validating property: ["boolean"]')
@@ -69,7 +69,7 @@ describe('Types', () => {
 
         describe('with a valid value', function () {
             it('should return a copy of the value', () => {
-                const result = Types.validateStruct(VALUE)
+                const result = Validated.validate_Struct(VALUE)
                 result.should.not.equal(VALUE)
                 result.should.eql(VALUE)
             })

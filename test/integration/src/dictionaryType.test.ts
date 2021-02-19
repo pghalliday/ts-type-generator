@@ -1,14 +1,14 @@
 import {
-    Types,
+    Validated,
     ValidationError,
-} from "./types/validation";
+} from "./types";
 import {expect} from 'chai'
 
 describe('Types', () => {
     describe('validateDictionary', () => {
         describe('with an invalid value', function () {
             it('should return an error', () => {
-                const result = Types.validateDictionary("orange")
+                const result = Validated.validate_Dictionary("orange")
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not a dictionary')
@@ -18,7 +18,7 @@ describe('Types', () => {
 
         describe('with an invalid element', function () {
             it('should return an error', () => {
-                const result = Types.validateDictionary({
+                const result = Validated.validate_Dictionary({
                     apple: 99,
                 })
                 result.should.be.an.instanceOf(ValidationError)
@@ -26,7 +26,7 @@ describe('Types', () => {
                 error.message.should.equal('Error encountered validating key: [apple]')
                 error.cause?.should.be.an.instanceof(ValidationError)
                 const cause = <ValidationError> error.cause
-                cause.message.should.equal('Type not in [false | true]')
+                cause.message.should.equal('Type not in [DictionaryTrue | DictionaryFalse]')
             })
         });
 
@@ -37,7 +37,7 @@ describe('Types', () => {
                     banana: false,
                     pear: true,
                 }
-                const result = Types.validateDictionary(dictionary)
+                const result = Validated.validate_Dictionary(dictionary)
                 result.should.not.equal(dictionary)
                 result.should.eql(dictionary)
             })

@@ -13,19 +13,19 @@ describe('StringLiteralType', () => {
         })
 
         it('should have the correct validation type name', () => {
-            instance.getValidationTypeName().should.equal(TYPE_NAME)
+            instance.getTypeName().should.equal(TYPE_NAME)
         })
 
         it('should have the correct namespaced validation type name', () => {
-            instance.getNamespacedValidationTypeName().should.equal(`Public.${instance.getValidationTypeName()}`)
+            instance.getNamespacedTypeName().should.equal(`Public.${instance.getTypeName()}`)
         })
 
         it('should have the correct validator name', () => {
-            instance.getValidatorName().should.equal(`validate${instance.getValidationTypeName()}`)
+            instance.getValidatorName().should.equal(`validate${instance.getTypeName()}`)
         })
 
         it('should have the correct namespaced validator name', () => {
-            instance.getNamespacedValidatorName().should.equal(`Public.validate${instance.getValidationTypeName()}`)
+            instance.getNamespacedValidatorName().should.equal(`Public.validate${instance.getTypeName()}`)
         })
 
         it('should depend on the primitive type', () => {
@@ -39,11 +39,11 @@ describe('StringLiteralType', () => {
         })
 
         it('should have the value as its validation type name', () => {
-            instance.getValidationTypeName().should.equal(JSON.stringify(VALUE))
+            instance.getTypeName().should.equal(JSON.stringify(VALUE))
         })
 
         it('should have the correct namespaced validation type name', () => {
-            instance.getNamespacedValidationTypeName().should.equal(instance.getValidationTypeName())
+            instance.getNamespacedTypeName().should.equal(instance.getTypeName())
         })
 
         it('should have a generated validator name', () => {

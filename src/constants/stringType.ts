@@ -1,2 +1,3 @@
-import {PrimitiveType} from "../types/PrimitiveType";
-export const stringType = new PrimitiveType<string>("")
+import {StringType} from "../internal";
+
+export const stringType = new StringType('StringType')

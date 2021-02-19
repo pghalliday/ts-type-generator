@@ -2,11 +2,11 @@ import {numberListType, numberType} from "../../../../src"
 
 describe('numberListType', () => {
     it('should have the correct validation type name', () => {
-        numberListType.getValidationTypeName().should.equal('(number)[]')
+        numberListType.getTypeName().should.equal('(number)[]')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        numberListType.getNamespacedValidationTypeName().should.equal('(number)[]')
+        numberListType.getNamespacedTypeName().should.equal('(number)[]')
     })
 
     it('should have the correct validator name', () => {

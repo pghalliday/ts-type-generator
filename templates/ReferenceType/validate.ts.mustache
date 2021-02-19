@@ -1,0 +1,6 @@
+export type {{{name}}} = string;
+
+export function {{{validator}}}(data: unknown): {{{name}}} | {{{internalPrefix}}}Util.ValidationError {
+    if (typeof data !== "string") return new {{{internalPrefix}}}Util.ValidationError("Not a string");
+    return data;
+}

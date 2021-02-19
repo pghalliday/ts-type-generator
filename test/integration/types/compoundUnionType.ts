@@ -7,7 +7,7 @@ import {structType} from "./structType";
 import {trueType} from "./trueType";
 import {unionType} from "./unionType";
 
-export const compoundUnionType = new UnionType()
+export const compoundUnionType = new UnionType("CompoundUnion")
 .type(dictionaryType)
 .type(helloType)
 .type(listType)

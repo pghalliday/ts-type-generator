@@ -1,9 +1,9 @@
-import {ListType, NumberLiteralType, UnionType} from "../../../lib";
+import {ListType, LiteralType, UnionType} from "../../../lib";
 
 export const listType = new ListType(
-    new UnionType()
-        .type(new NumberLiteralType(100))
-        .type(new NumberLiteralType(101))
-        .type(new NumberLiteralType(102)),
     'List',
+    new UnionType('ListUnion')
+        .type(new LiteralType<number>('List100', 100))
+        .type(new LiteralType<number>('List101', 101))
+        .type(new LiteralType<number>('List102', 102)),
 )

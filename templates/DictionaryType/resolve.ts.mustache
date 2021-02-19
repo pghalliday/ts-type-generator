@@ -1,0 +1,20 @@
+export type {{{name}}} = undefined | {[key: string]: {{{type}}} };
+
+export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{name}}}): {{{name}}} {
+    const value: {{{name}}} = {};
+    for (const key in validated) {
+        value[key] = {{{typeInitializer}}}(validated[key]);
+    }
+    return value;
+}
+
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {
+{{#references}}
+    {{{name}}}: {[key: string]: {{{type}}} },
+{{/references}}
+}): {{{name}}} {
+    for (const key in src) {
+        dest![key] = {{{typeResolver}}}(dest![key], src[key], resolvedReferences);
+    }
+    return dest;
+}

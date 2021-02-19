@@ -1,3 +1,3 @@
-import {StringLiteralType} from "../../../lib";
+import {LiteralType} from "../../../lib";
 
-export const helloType = new StringLiteralType("Hello", 'Hello')
+export const helloType = new LiteralType<string>('Hello', 'Hello')

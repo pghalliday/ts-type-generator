@@ -1,45 +1,42 @@
 import {Type} from "../../src/util/Type";
+import {Collection} from "../../src/util/Collection";
 
 export class TestType implements Type {
     private readonly name: string
-    private readonly public: boolean
-    private readonly types: Type[] = []
 
-    constructor(name: string, isPublic: boolean) {
+    constructor(name: string) {
         this.name = name
-        this.public = isPublic
     }
 
-    isPublic(): boolean {
-        return this.public
-    }
-
-    getValidationTypeName(): string {
+    getTypeName(): string {
         return this.name
     }
 
-    getNamespacedValidationTypeName(): string {
-        return this.isPublic() ? `Public.${this.getValidationTypeName()}` : `Private.${this.getValidationTypeName()}`
+    getNamespacedTypeName(): string {
+        return `Private.${this.getTypeName()}`
     }
 
     getValidatorName(): string {
-        return `validate${this.getValidationTypeName()}`
+        return `validate${this.getTypeName()}`
     }
 
     getNamespacedValidatorName(): string {
-        return this.isPublic() ? `Public.${this.getValidatorName()}` : `Private.${this.getValidatorName()}`
+        return `Private.${this.getValidatorName()}`
     }
 
-    async writeValidationCode(): Promise<void> {
+    async writeValidateCode(): Promise<void> {
         // do nothing
     }
 
-    type(type: Type): TestType {
-        this.types.push(type)
-        return this
+    async writeResolveCode(): Promise<void> {
+        // do nothing
     }
 
     getDependencies(): Type[] {
-        return this.types
+        return []
+    }
+
+    getReferences(): Collection[] {
+        return []
     }
 }

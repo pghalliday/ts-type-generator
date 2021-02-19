@@ -2,11 +2,11 @@ import {numberDictionaryType, numberType} from "../../../../src"
 
 describe('numberDictionaryType', () => {
     it('should have the correct validation type name', () => {
-        numberDictionaryType.getValidationTypeName().should.equal('{[key: string]: number}')
+        numberDictionaryType.getTypeName().should.equal('{[key: string]: number}')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        numberDictionaryType.getNamespacedValidationTypeName().should.equal('{[key: string]: number}')
+        numberDictionaryType.getNamespacedTypeName().should.equal('{[key: string]: number}')
     })
 
     it('should have the correct validator name', () => {

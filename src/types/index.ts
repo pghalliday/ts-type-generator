@@ -1,7 +1,0 @@
-export * from './StringLiteralType'
-export * from './NumberLiteralType'
-export * from './BooleanLiteralType'
-export * from './UnionType'
-export * from './StructType'
-export * from './ListType'
-export * from './DictionaryType'

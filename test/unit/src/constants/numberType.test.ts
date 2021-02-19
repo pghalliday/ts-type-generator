@@ -2,11 +2,11 @@ import {numberType} from "../../../../src";
 
 describe('numberType', () => {
     it('should have the correct validation type name', () => {
-        numberType.getValidationTypeName().should.equal('number')
+        numberType.getTypeName().should.equal('number')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        numberType.getNamespacedValidationTypeName().should.equal('number')
+        numberType.getNamespacedTypeName().should.equal('number')
     })
 
     it('should have the correct validator name', () => {

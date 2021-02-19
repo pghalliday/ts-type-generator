@@ -1,4 +1,6 @@
-import {stringType} from "./stringType";
-import {PrimitiveDictionaryType} from "../types/PrimitiveDictionaryType";
+import {
+    DictionaryType,
+    stringType,
+} from "../internal"
 
-export const stringDictionaryType = new PrimitiveDictionaryType(stringType)
+export const stringDictionaryType = new DictionaryType('StringDictionary', stringType)

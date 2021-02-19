@@ -1,2 +1,3 @@
-import {PrimitiveType} from "../types/PrimitiveType";
-export const booleanType = new PrimitiveType<boolean>(true)
+import {BooleanType} from "../internal";
+
+export const booleanType = new BooleanType('BooleanType')

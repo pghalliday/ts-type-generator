@@ -2,11 +2,11 @@ import {booleanListType, booleanType} from "../../../../src"
 
 describe('booleanListType', () => {
     it('should have the correct validation type name', () => {
-        booleanListType.getValidationTypeName().should.equal('(boolean)[]')
+        booleanListType.getTypeName().should.equal('(boolean)[]')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        booleanListType.getNamespacedValidationTypeName().should.equal('(boolean)[]')
+        booleanListType.getNamespacedTypeName().should.equal('(boolean)[]')
     })
 
     it('should have the correct validator name', () => {

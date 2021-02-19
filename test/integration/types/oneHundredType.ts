@@ -1,3 +1,3 @@
-import {NumberLiteralType} from "../../../lib";
+import {LiteralType} from "../../../lib";
 
-export const oneHundredType = new NumberLiteralType(100, 'OneHundred')
+export const oneHundredType = new LiteralType<number>('OneHundred', 100)

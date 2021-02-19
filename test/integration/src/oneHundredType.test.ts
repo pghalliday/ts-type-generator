@@ -1,26 +1,24 @@
 import {
-    Types,
+    Validated,
     ValidationError,
-} from "./types/validation";
+} from "./types";
 import {expect} from 'chai'
 
 describe('Types', () => {
     describe('validateOneHundred', () => {
         describe('with an invalid value', function () {
             it('should return an error', () => {
-                const result = Types.validateOneHundred(true)
+                const result = Validated.validate_OneHundred(true)
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
-                error.message.should.equal('Error encountered validating: [number]')
-                error.cause?.should.be.an.instanceOf(ValidationError)
-                const cause = <ValidationError> error.cause
-                cause.message.should.equal('Not a number')
+                error.message.should.equal('Not a [number]')
+                expect(error.cause).to.be.undefined
             })
         });
 
         describe('with an invalid number literal', function () {
             it('should return an error', () => {
-                const result = Types.validateOneHundred(101)
+                const result = Validated.validate_OneHundred(101)
                 result.should.be.an.instanceof(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not [100]')
@@ -30,7 +28,7 @@ describe('Types', () => {
 
         describe('with a valid number literal', function () {
             it('should return the value', () => {
-                const result = Types.validateOneHundred(100)
+                const result = Validated.validate_OneHundred(100)
                 result.should.be.a('number')
                 result.should.be.equal(100)
             })

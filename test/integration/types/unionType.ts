@@ -1,6 +1,6 @@
-import {StringLiteralType, UnionType} from "../../../lib";
+import {LiteralType, UnionType} from "../../../lib";
 
 export const unionType = new UnionType('Union')
-    .type(new StringLiteralType('apple'))
-    .type(new StringLiteralType('banana'))
-    .type(new StringLiteralType('pear'))
+    .type(new LiteralType<string>('Apple', 'apple'))
+    .type(new LiteralType<string>('Banana', 'banana'))
+    .type(new LiteralType<string>('Pear', 'pear'))

@@ -1,4 +1,6 @@
-import {booleanType} from "./booleanType";
-import {PrimitiveListType} from "../types/PrimitiveListType";
+import {
+    ListType,
+    booleanType,
+} from "../internal"
 
-export const booleanListType = new PrimitiveListType(booleanType)
+export const booleanListType = new ListType('BooleanList', booleanType)

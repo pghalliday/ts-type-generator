@@ -1,0 +1,6 @@
+export type {{{name}}} = {{{typedef}}};
+
+export function {{{validator}}}(data: unknown): {{{name}}} | {{{internalPrefix}}}Util.ValidationError {
+    if (typeof data !== "{{{typedef}}}") return new {{{internalPrefix}}}Util.ValidationError("Not a {{{typedef}}}");
+    return data;
+}

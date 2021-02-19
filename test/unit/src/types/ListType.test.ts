@@ -3,7 +3,7 @@ import {TestType} from "../../TestType";
 
 const TYPE_NAME = 'MyArrayType'
 const ARRAY_TYPE_NAME = 'Type'
-const TYPE = new TestType(ARRAY_TYPE_NAME, true)
+const TYPE = new TestType(ARRAY_TYPE_NAME)
 
 const GENERATED_VALIDATOR_NAME_REGEXP = new RegExp('^validateList_[0-9]+$')
 
@@ -16,15 +16,15 @@ describe('ListType', () => {
         })
 
         it('should have the correct validation type name', () => {
-            instance.getValidationTypeName().should.equal(TYPE_NAME)
+            instance.getTypeName().should.equal(TYPE_NAME)
         })
 
         it('should have the correct namespaced validation type name', () => {
-            instance.getNamespacedValidationTypeName().should.equal(`Public.${instance.getValidationTypeName()}`)
+            instance.getNamespacedTypeName().should.equal(`Public.${instance.getTypeName()}`)
         })
 
         it('should have the correct validator name', () => {
-            instance.getValidatorName().should.equal(`validate${instance.getValidationTypeName()}`)
+            instance.getValidatorName().should.equal(`validate${instance.getTypeName()}`)
         })
 
         it('should have the correct namespaced validator name', () => {
@@ -42,11 +42,11 @@ describe('ListType', () => {
         })
 
         it('should use the type def as the validation type name', () => {
-            instance.getValidationTypeName().should.equal(`(${TYPE.getValidationTypeName()})[]`)
+            instance.getTypeName().should.equal(`(${TYPE.getTypeName()})[]`)
         })
 
         it('should use the namespaced type def as the namespaced validation type name', () => {
-            instance.getNamespacedValidationTypeName().should.equal(`(${TYPE.getNamespacedValidationTypeName()})[]`)
+            instance.getNamespacedTypeName().should.equal(`(${TYPE.getNamespacedTypeName()})[]`)
         })
 
         it('should have a generated validator name', () => {

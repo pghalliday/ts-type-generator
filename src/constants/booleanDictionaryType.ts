@@ -1,4 +1,6 @@
-import {booleanType} from "./booleanType";
-import {PrimitiveDictionaryType} from "../types/PrimitiveDictionaryType";
+import {
+    DictionaryType,
+    booleanType,
+} from "../internal"
 
-export const booleanDictionaryType = new PrimitiveDictionaryType(booleanType)
+export const booleanDictionaryType = new DictionaryType('BooleanDictionary', booleanType)

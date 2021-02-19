@@ -2,11 +2,11 @@ import {stringDictionaryType, stringType} from "../../../../src"
 
 describe('stringDictionaryType', () => {
     it('should have the correct validation type name', () => {
-        stringDictionaryType.getValidationTypeName().should.equal('{[key: string]: string}')
+        stringDictionaryType.getTypeName().should.equal('{[key: string]: string}')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        stringDictionaryType.getNamespacedValidationTypeName().should.equal('{[key: string]: string}')
+        stringDictionaryType.getNamespacedTypeName().should.equal('{[key: string]: string}')
     })
 
     it('should have the correct validator name', () => {

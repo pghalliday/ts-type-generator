@@ -1,6 +1,0 @@
-import {ValidationError} from "../ValidationError";
-
-export function {{{validatorName}}}(data: unknown): {{{typeName}}} | ValidationError {
-    if (typeof data !== "{{{typeName}}}") return new ValidationError("Not a {{{typeName}}}");
-    return data;
-}

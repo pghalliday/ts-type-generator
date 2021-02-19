@@ -1,4 +1,6 @@
-import {stringType} from "./stringType";
-import {PrimitiveListType} from "../types/PrimitiveListType";
+import {
+    ListType,
+    stringType,
+} from "../internal"
 
-export const stringListType = new PrimitiveListType(stringType)
+export const stringListType = new ListType('StringList', stringType)

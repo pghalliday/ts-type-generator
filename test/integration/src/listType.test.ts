@@ -1,14 +1,14 @@
 import {
-    Types,
+    Validated,
     ValidationError,
-} from "./types/validation";
+} from "./types";
 import {expect} from 'chai'
 
 describe('Types', () => {
     describe('validateList', () => {
         describe('with an invalid value', function () {
             it('translate with an invalid value should return an error', () => {
-                const result = Types.validateList("orange")
+                const result = Validated.validate_List("orange")
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not a list')
@@ -18,13 +18,13 @@ describe('Types', () => {
 
         describe('with an invalid element', function () {
             it('should return an error', () => {
-                const result = Types.validateList([99])
+                const result = Validated.validate_List([99])
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Error encountered validating index: [0]')
                 error.cause?.should.be.an.instanceof(ValidationError)
                 const cause = <ValidationError> error.cause
-                cause.message.should.equal('Type not in [100 | 101 | 102]')
+                cause.message.should.equal('Type not in [List100 | List101 | List102]')
             })
         });
 
@@ -37,7 +37,7 @@ describe('Types', () => {
                     101,
                     102,
                 ]
-                const result = Types.validateList(list)
+                const result = Validated.validate_List(list)
                 result.should.not.equal(list)
                 result.should.eql(list)
             })

@@ -11,6 +11,7 @@ import {compoundUnionType} from "./compoundUnionType";
 import {compoundStructType} from "./compoundStructType";
 import {compoundListType} from "./compoundListType";
 import {compoundDictionaryType} from "./compoundDictionaryType";
+import {structReference} from "./referenceStruct";
 
 const tsTypeGenerator = new TsTypeGenerator()
 
@@ -26,6 +27,7 @@ tsTypeGenerator
     .type(compoundStructType)
     .type(compoundListType)
     .type(compoundDictionaryType)
+    .type(structReference)
     .generate(resolve(__dirname, '../src/types'))
     .then(() => {
         console.log('done')

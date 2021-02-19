@@ -1,26 +1,23 @@
 import {
-    Types,
+    Validated,
     ValidationError,
-} from "./types/validation";
+} from "./types";
 import {expect} from 'chai'
 
 describe('Types', () => {
     describe('validateHello', () => {
         describe('with an invalid value', function () {
             it('should return an error', () => {
-                const result = Types.validateHello(100)
+                const result = Validated.validate_Hello(100)
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
-                error.message.should.equal('Error encountered validating: [string]')
-                error.cause?.should.be.an.instanceOf(ValidationError)
-                const cause = <ValidationError> error.cause
-                cause.message.should.equal('Not a string')
+                error.message.should.equal('Not a [string]')
             })
         });
 
         describe('with an invalid string literal', function () {
             it('should return an error', () => {
-                const result = Types.validateHello('banana')
+                const result = Validated.validate_Hello('banana')
                 result.should.be.an.instanceof(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not ["Hello"]')
@@ -30,7 +27,7 @@ describe('Types', () => {
 
         describe('with a valid string literal', function () {
             it('should return the value', () => {
-                const result = Types.validateHello('Hello')
+                const result = Validated.validate_Hello('Hello')
                 result.should.be.a('string')
                 result.should.be.equal('Hello')
             })

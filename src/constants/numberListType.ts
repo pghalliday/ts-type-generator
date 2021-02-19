@@ -1,4 +1,6 @@
-import {numberType} from "./numberType";
-import {PrimitiveListType} from "../types/PrimitiveListType";
+import {
+    ListType,
+    numberType,
+} from "../internal"
 
-export const numberListType = new PrimitiveListType(numberType)
+export const numberListType = new ListType('NumberList', numberType)

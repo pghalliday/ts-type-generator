@@ -1,26 +1,24 @@
 import {
-    Types,
+    Validated,
     ValidationError,
-} from "./types/validation";
+} from "./types";
 import {expect} from 'chai'
 
 describe('Types', () => {
     describe('validateTrue', () => {
         describe('with an invalid value', function () {
             it('translate with an invalid value should return an error', () => {
-                const result = Types.validateTrue(100)
+                const result = Validated.validate_True(100)
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
-                error.message.should.equal('Error encountered validating: [boolean]')
-                error.cause?.should.be.an.instanceOf(ValidationError)
-                const cause = <ValidationError> error.cause
-                cause.message.should.equal('Not a boolean')
+                error.message.should.equal('Not a [boolean]')
+                expect(error.cause).to.be.undefined
             })
         });
 
         describe('with an invalid boolean literal', function () {
             it('should return an error', () => {
-                const result = Types.validateTrue(false)
+                const result = Validated.validate_True(false)
                 result.should.be.an.instanceof(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not [true]')
@@ -30,7 +28,7 @@ describe('Types', () => {
 
         describe('with a valid boolean literal', function () {
             it('translate with a valid boolean value should the value', () => {
-                const result = Types.validateTrue(true)
+                const result = Validated.validate_True(true)
                 result.should.be.a('boolean')
                 result.should.be.true
             })

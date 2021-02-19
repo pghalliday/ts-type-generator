@@ -1,2 +1,3 @@
-import {PrimitiveType} from "../types/PrimitiveType";
-export const numberType = new PrimitiveType<number>(0)
+import {NumberType} from "../internal";
+
+export const numberType = new NumberType('NumberType')

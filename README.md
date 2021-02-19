@@ -219,12 +219,12 @@ new NumberLiteralType(VALUE, NAME?)
 
 Literal types are useful in union types to specify a limited list of valid values.
 
-#### `BooleanLiteralType`
+#### `LiteralType`
 
 To define a `boolean` literal type.
 
 ```typescript
-new BooleanLiteralType(VALUE, NAME?)
+new LiteralType(VALUE, NAME?)
 ```
 
 Literal types are useful in union types to specify a limited list of valid values.

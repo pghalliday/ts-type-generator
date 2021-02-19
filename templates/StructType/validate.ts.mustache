@@ -1,0 +1,18 @@
+export type {{{name}}} = {
+{{#properties}}
+    {{{name}}}: {{{type}}},
+{{/properties}}
+};
+
+export function {{{validator}}}(data: unknown): {{{name}}} | {{{internalPrefix}}}Util.ValidationError {
+    if (!{{{internalPrefix}}}Util.isObject(data)) return new {{{internalPrefix}}}Util.ValidationError("Not an object");
+    {{#properties}}
+    const property_{{{name}}} = {{{internalPrefix}}}Util.validateProperty(data, "{{{name}}}", {{{validator}}});
+    if (property_{{{name}}} instanceof {{{internalPrefix}}}Util.ValidationError) return property_{{{name}}};
+    {{/properties}}
+    return {
+    {{#properties}}
+        {{{name}}}: property_{{{name}}},
+    {{/properties}}
+    };
+}

@@ -1,0 +1,17 @@
+export type {{{name}}} =
+{{#types}}
+    {{{.}}} |
+{{/types}}
+    undefined;
+
+export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{name}}}): {{{name}}} {
+    return validated;
+}
+
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {
+{{#references}}
+    {{{name}}}: {[key: string]: {{{type}}} },
+{{/references}}
+}): {{{name}}} {
+    return src;
+}

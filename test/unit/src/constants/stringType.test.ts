@@ -2,11 +2,11 @@ import {stringType} from "../../../../src";
 
 describe('stringType', () => {
     it('should have the correct validation type name', () => {
-        stringType.getValidationTypeName().should.equal('string')
+        stringType.getTypeName().should.equal('string')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        stringType.getNamespacedValidationTypeName().should.equal('string')
+        stringType.getNamespacedTypeName().should.equal('string')
     })
 
     it('should have the correct validator name', () => {

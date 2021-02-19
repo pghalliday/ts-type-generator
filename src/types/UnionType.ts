@@ -1,31 +1,36 @@
-import {Type} from "../util/Type";
+import {
+    Type,
+    INTERNAL_PREFIX,
+    TEMPLATES_DIR,
+    collectTypes,
+    collectReferences,
+    Reference,
+    VALIDATE, RESOLVE, COLLAPSE, UTIL_DIR
+} from "../internal";
 import map from "lodash/map"
 import Mustache from "mustache";
 import {readFileSync} from "fs";
 import {join} from 'path'
-import {AccessParams} from "../util/AccessParams";
-import {PRIVATE_DIR, PUBLIC_DIR, TEMPLATES_DIR, VALIDATION_DIR} from "../util/constants";
-import {outputFile, write} from "fs-extra";
+import {write} from "fs-extra";
 
 const UNION_SEPARATOR = ' | '
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'UnionType')
-const VALIDATION_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validation.ts.mustache')).toString()
+const VALIDATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validate.ts.mustache')).toString()
+const RESOLVE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'resolve.ts.mustache')).toString()
+const COLLAPSE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'collapse.ts.mustache')).toString()
 
-export class UnionType implements Type {
-    private readonly accessParams: AccessParams
+export class UnionError extends Error {}
+
+function checkForReferences(types: Type[]): void {
+    if (collectReferences(collectTypes(types)).length > 0) throw new UnionError('Union types cannot contain reference types')
+}
+
+export class UnionType extends Type {
     private readonly types: Type[] = []
 
-    constructor(name?: string) {
-        this.accessParams = new AccessParams('Union', name)
-    }
-
     private getTypeDef(): string {
-        return map(this.types, type => type.getValidationTypeName()).join(UNION_SEPARATOR)
-    }
-
-    private getNamespacedTypeDef(): string {
-        return map(this.types, type => type.getNamespacedValidationTypeName()).join(UNION_SEPARATOR)
+        return map(this.types, type => type.getTypeName()).join(UNION_SEPARATOR)
     }
 
     type(type: Type): UnionType {
@@ -33,48 +38,57 @@ export class UnionType implements Type {
         return this
     }
 
-    private isPublic(): boolean {
-        return this.accessParams.public
-    }
-
-    getValidationTypeName(): string {
-        if (this.isPublic()) {
-            return this.accessParams.name
-        }
-        return this.getTypeDef()
-    }
-
-    getNamespacedValidationTypeName(): string {
-        if (this.isPublic()) {
-            return `Public.${this.accessParams.name}`
-        }
-        return this.getNamespacedTypeDef()
-    }
-
-    getValidatorName(): string {
-        return `validate${this.accessParams.name}`
-    }
-
-    getNamespacedValidatorName(): string {
-        return this.isPublic()? `Public.${this.getValidatorName()}` :  `Private.${this.getValidatorName()}`
-    }
-
-    /* istanbul ignore next */
-    async writeValidationCode(outputDir: string, privateExports: number, publicExports: number): Promise<void> {
-        const exports = this.isPublic() ? publicExports : privateExports
-        const importPath = join(this.isPublic() ? PUBLIC_DIR : PRIVATE_DIR, this.accessParams.name)
-        await outputFile(join(outputDir, VALIDATION_DIR, `${importPath}.ts`), Mustache.render(VALIDATION_CODE, {
-            isPublic: this.isPublic(),
-            typeDef: this.getTypeDef(),
-            namespacedTypeDef: this.getNamespacedTypeDef(),
-            typeName: this.isPublic() ? this.getValidationTypeName() : this.getNamespacedTypeDef(),
-            validatorName: this.getValidatorName(),
-            typeValidatorNames: map(this.types, type => type.getNamespacedValidatorName())
-        }))
-        await write(exports, `export * from "./${importPath}";\n`)
-    }
-
     getDependencies(): Type[] {
         return this.types;
+    }
+
+    getReferences(): Reference[] {
+        return [];
+    }
+
+    async writeResolveCode(exports: number, references: Reference[]): Promise<void> {
+        checkForReferences(this.types)
+        await write(exports, Mustache.render(RESOLVE_CODE, {
+            internalPrefix: INTERNAL_PREFIX,
+            validatedDir: VALIDATE,
+            resolvedDir: RESOLVE,
+            collapsedDir: COLLAPSE,
+            utilDir: UTIL_DIR,
+            name: this.getTypeName(),
+            initializer: this.getInitializerName(),
+            resolver: this.getResolverName(),
+            types: map(this.types, type => type.getTypeName()),
+            references,
+        }))
+    }
+
+    async writeValidateCode(exports: number): Promise<void> {
+        await write(exports, Mustache.render(VALIDATE_CODE, {
+            internalPrefix: INTERNAL_PREFIX,
+            validatedDir: VALIDATE,
+            resolvedDir: RESOLVE,
+            collapsedDir: COLLAPSE,
+            utilDir: UTIL_DIR,
+            name: this.getTypeName(),
+            typedef: this.getTypeDef(),
+            validator: this.getValidatorName(),
+            types: map(this.types, type => ({
+                name: type.getTypeName(),
+                validator: type.getValidatorName(),
+            }))
+        }))
+    }
+
+    async writeCollapseCode(exports: number): Promise<void> {
+        await write(exports, Mustache.render(COLLAPSE_CODE, {
+            internalPrefix: INTERNAL_PREFIX,
+            validatedDir: VALIDATE,
+            resolvedDir: RESOLVE,
+            collapsedDir: COLLAPSE,
+            utilDir: UTIL_DIR,
+            name: this.getTypeName(),
+            collapser: this.getCollapserName(),
+            types: map(this.types, type => type.getTypeName()),
+        }))
     }
 }

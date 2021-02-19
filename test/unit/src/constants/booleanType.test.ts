@@ -2,11 +2,11 @@ import {booleanType} from "../../../../src";
 
 describe('booleanType', () => {
     it('should have the correct validation type name', () => {
-        booleanType.getValidationTypeName().should.equal('boolean')
+        booleanType.getTypeName().should.equal('boolean')
     })
 
     it('should have the correct namespaced validation type name', () => {
-        booleanType.getNamespacedValidationTypeName().should.equal('boolean')
+        booleanType.getNamespacedTypeName().should.equal('boolean')
     })
 
     it('should have the correct validator name', () => {

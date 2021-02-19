@@ -1,0 +1,12 @@
+export type {{{name}}} = {{{type}}}[];
+
+export function {{{validator}}}(data: unknown): {{{name}}} | {{{internalPrefix}}}Util.ValidationError {
+    if (!{{{internalPrefix}}}Util.isArray(data)) return new {{{internalPrefix}}}Util.ValidationError('Not a list');
+    const list: {{{name}}} = [];
+    for (const index in data) {
+        const validated = {{{typeValidator}}}(data[index]);
+        if (validated instanceof {{{internalPrefix}}}Util.ValidationError) return new {{{internalPrefix}}}Util.ValidationError(`Error encountered validating index: [${index}]`, validated);
+        list.push(validated)
+    }
+    return list;
+}

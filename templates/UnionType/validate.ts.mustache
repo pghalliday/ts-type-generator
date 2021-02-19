@@ -1,0 +1,14 @@
+export type {{{name}}} =
+{{#types}}
+    {{{name}}} |
+{{/types}}
+    never;
+
+export function {{{validator}}}(data: unknown): {{{name}}} | {{{internalPrefix}}}Util.ValidationError {
+    let validated: {{{name}}} | {{{internalPrefix}}}Util.ValidationError;
+{{#types}}
+    validated = {{{validator}}}(data);
+    if (!(validated instanceof {{{internalPrefix}}}Util.ValidationError)) return validated;
+{{/types}}
+    return new {{{internalPrefix}}}Util.ValidationError('Type not in [{{{typedef}}}]');
+}

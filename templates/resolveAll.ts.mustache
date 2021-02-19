@@ -1,0 +1,56 @@
+import * as Validated from "./{{{validated}}}";
+import * as Resolved from "./{{{resolved}}}";
+import * as Collapsed from "./{{{collapsed}}}";
+
+export function resolveAll(validatedReferences: {
+{{#references}}
+    {{{name}}}: {[key: string]: Validated.{{{type}}} },
+{{/references}}
+}): {
+{{#references}}
+    {{{name}}}: {[key: string]: Collapsed.{{{type}}} },
+{{/references}}
+} {
+    const resolvedReferences: {
+{{#references}}
+        {{{name}}}: {[key: string]: Resolved.{{{type}}} },
+{{/references}}
+    } = {
+{{#references}}
+        {{{name}}}: {},
+{{/references}}
+    };
+
+    const collapsedReferences: {
+{{#references}}
+        {{{name}}}: {[key: string]: Collapsed.{{{type}}} },
+{{/references}}
+    } = {
+{{#references}}
+        {{{name}}}: {},
+{{/references}}
+    };
+
+{{#references}}
+    const validated_{{{name}}}: {[key: string]: Validated.{{{type}}} } = validatedReferences.{{{name}}};
+    const resolved_{{{name}}}: {[key: string]: Resolved.{{{type}}} } = resolvedReferences.{{{name}}};
+    const collapsed_{{{name}}}: {[key: string]: Collapsed.{{{type}}} } = collapsedReferences.{{{name}}};
+    for (const key in validated_{{{name}}}) {
+        resolved_{{{name}}}[key] = Resolved.{{{initializer}}}(validated_{{{name}}}[key]);
+    }
+{{/references}}
+
+{{#references}}
+    for (const key in validated_{{{name}}}) {
+        resolved_{{{name}}}[key] = Resolved.{{{resolver}}}(resolved_{{{name}}}[key], validated_{{{name}}}[key], resolvedReferences);
+    }
+{{/references}}
+
+{{#references}}
+    for (const key in resolved_{{{name}}}) {
+        collapsed_{{{name}}}[key] = Collapsed.{{{collapser}}}(resolved_{{{name}}}[key]);
+    }
+{{/references}}
+
+    return collapsedReferences;
+}
