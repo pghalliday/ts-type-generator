@@ -2,8 +2,8 @@ import {
     Validated,
     Collapsed,
     References,
+    resolveReferences,
 } from "./types";
-import {resolveAll} from "./types";
 
 const booleanLiteral1: Validated.True = true
 const booleanLiteral2: Validated.True = true
@@ -245,7 +245,7 @@ describe('Types', () => {
                 let collapsedStruct2: Collapsed.ReferenceStruct
 
                 before(() => {
-                    const collapsedReferences = resolveAll(validReferences)
+                    const collapsedReferences = resolveReferences(validReferences)
                     collapsedStruct1 = collapsedReferences.StructReference['key1']
                     collapsedStruct2 = collapsedReferences.StructReference['key2']
                 })
@@ -340,7 +340,7 @@ describe('Types', () => {
             describe('with invalid references', () => {
                 it('should throw an error', () => {
                     (() => {
-                        resolveAll(invalidReferences)
+                        resolveReferences(invalidReferences)
                     }).should.throw('key not found: BooleanLiteralReference/key3')
                 })
             })

@@ -1,7 +1,7 @@
 import * as Resolved from "./{{{resolved}}}";
 import * as References from "./{{{references}}}";
 
-export function resolveAll(validatedReferences: References.ValidatedReferences): References.CollapsedReferences {
+export function resolveReferences(validatedReferences: References.ValidatedReferences): References.CollapsedReferences {
     const resolvedReferences: References.ResolvedReferences = {
 {{#referencesData}}
         {{{name}}}: {},
