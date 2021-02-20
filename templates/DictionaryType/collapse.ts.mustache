@@ -1,9 +1,1 @@
 export type {{{name}}} = {[key: string]: {{{type}}} };
-
-export function {{{collapser}}}(resolved: {{{internalPrefix}}}Resolved.{{{name}}}): {{{name}}} {
-    const value: {{{name}}} = {};
-    for (const key in resolved!) {
-        value[key] = {{{typeCollapser}}}(resolved[key]);
-    }
-    return value;
-}

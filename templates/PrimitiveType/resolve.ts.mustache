@@ -1,13 +1,9 @@
-export type {{{name}}} = undefined | {{{internalPrefix}}}Validated.{{{name}}};
+export type {{{name}}} = undefined | {{{typedef}}};
 
 export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{name}}}): {{{name}}} {
     return validated;
 }
 
-export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {
-{{#references}}
-    {{{name}}}: {[key: string]: {{{type}}} },
-{{/references}}
-}): {{{name}}} {
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {{{internalPrefix}}}References.ResolvedReferences): {{{name}}} {
     return src;
 }

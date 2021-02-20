@@ -3,7 +3,14 @@ import {
     FILES_DIR,
     TEMPLATES_DIR,
     collectTypes,
-    collectReferences, COLLAPSE, VALIDATE, RESOLVE, UTIL_DIR, RESOLVE_ALL_FILE, INTERNAL_PREFIX,
+    collectReferences,
+    COLLAPSE,
+    VALIDATE,
+    RESOLVE,
+    UTIL_DIR,
+    INTERNAL_PREFIX,
+    REFERENCES,
+    RESOLVE_ALL,
 } from './internal'
 import {close, copy, open, outputFile, write} from "fs-extra";
 import {join} from 'path'
@@ -12,7 +19,7 @@ import {readFileSync} from "fs";
 
 const VALIDATE_CODE = readFileSync(join(TEMPLATES_DIR, 'validate.ts.mustache')).toString()
 const RESOLVE_CODE = readFileSync(join(TEMPLATES_DIR, 'resolve.ts.mustache')).toString()
-const COLLAPSE_CODE = readFileSync(join(TEMPLATES_DIR, 'collapse.ts.mustache')).toString()
+const REFERENCES_CODE = readFileSync(join(TEMPLATES_DIR, 'references.ts.mustache')).toString()
 const RESOLVE_ALL_CODE = readFileSync(join(TEMPLATES_DIR, 'resolveAll.ts.mustache')).toString()
 
 export class TsTypeGenerator {
@@ -41,30 +48,29 @@ export class TsTypeGenerator {
             internalPrefix: INTERNAL_PREFIX,
             validated: VALIDATE,
             resolved: RESOLVE,
-            collapsed: COLLAPSE,
-            utilDir: UTIL_DIR,
-        }))
-        await write(collapseExports, Mustache.render(COLLAPSE_CODE, {
-            internalPrefix: INTERNAL_PREFIX,
-            validated: VALIDATE,
-            resolved: RESOLVE,
+            references: REFERENCES,
             collapsed: COLLAPSE,
             utilDir: UTIL_DIR,
         }))
         for (const type of types) {
             await type.writeValidateCode(validateExports)
-            await type.writeResolveCode(resolveExports, references)
+            await type.writeResolveCode(resolveExports)
             await type.writeCollapseCode(collapseExports)
         }
         await close(validateExports)
         await close(resolveExports)
         await close(collapseExports)
-        await outputFile(join(outputDir, RESOLVE_ALL_FILE), Mustache.render(RESOLVE_ALL_CODE, {
+        await outputFile(join(outputDir, REFERENCES + '.ts'), Mustache.render(REFERENCES_CODE, {
             validated: VALIDATE,
             resolved: RESOLVE,
             collapsed: COLLAPSE,
-            utilDir: UTIL_DIR,
-            references,
+            referencesData: references,
+        }))
+        await outputFile(join(outputDir, RESOLVE_ALL + '.ts'), Mustache.render(RESOLVE_ALL_CODE, {
+            resolved: RESOLVE,
+            collapsed: COLLAPSE,
+            references: REFERENCES,
+            referencesData: references,
         }))
     }
 }

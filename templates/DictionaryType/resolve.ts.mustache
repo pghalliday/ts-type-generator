@@ -8,13 +8,10 @@ export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{na
     return value;
 }
 
-export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {
-{{#references}}
-    {{{name}}}: {[key: string]: {{{type}}} },
-{{/references}}
-}): {{{name}}} {
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {{{internalPrefix}}}References.ResolvedReferences): {{{name}}} {
+    {{{internalPrefix}}}assert.ok(typeof dest !== "undefined");
     for (const key in src) {
-        dest![key] = {{{typeResolver}}}(dest![key], src[key], resolvedReferences);
+        dest[key] = {{{typeResolver}}}(dest[key], src[key], resolvedReferences);
     }
     return dest;
 }

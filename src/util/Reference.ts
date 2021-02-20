@@ -3,5 +3,4 @@ export type Reference = {
     type: string,
     initializer: string,
     resolver: string,
-    collapser: string,
 }

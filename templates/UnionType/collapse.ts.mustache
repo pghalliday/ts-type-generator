@@ -1,9 +1,5 @@
 export type {{{name}}} =
 {{#types}}
-    {{{internalPrefix}}}Resolved.{{{.}}} |
+    {{{.}}} |
 {{/types}}
     never;
-
-export function {{{collapser}}}(resolved: {{{internalPrefix}}}Resolved.{{{name}}}): {{{name}}} {
-    return <{{{name}}}> resolved;
-}

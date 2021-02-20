@@ -4,12 +4,8 @@ export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{na
     return undefined;
 }
 
-export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {
-{{#references}}
-    {{{name}}}: {[key: string]: {{{type}}} },
-{{/references}}
-}): {{{name}}} {
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, resolvedReferences: {{{internalPrefix}}}References.ResolvedReferences): {{{name}}} {
     const value = resolvedReferences.{{{name}}}[src];
-    if (typeof value === 'undefined') throw new {{{internalPrefix}}}Util.ResolutionError(`key: [${src}] not found in reference: [{{{name}}}]`)
+    if (typeof value === 'undefined') throw new {{{internalPrefix}}}Util.ResolutionError(`key not found: {{{name}}}/${src}`)
     return value;
 }

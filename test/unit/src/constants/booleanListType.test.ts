@@ -1,23 +1,19 @@
-import {booleanListType, booleanType} from "../../../../src"
+import {booleanListType, booleanType, ListType} from "../../../../src"
 
 describe('booleanListType', () => {
-    it('should have the correct validation type name', () => {
-        booleanListType.getTypeName().should.equal('(boolean)[]')
+    it('should be a ListType', () => {
+        booleanListType.should.be.an.instanceof(ListType)
     })
 
-    it('should have the correct namespaced validation type name', () => {
-        booleanListType.getNamespacedTypeName().should.equal('(boolean)[]')
+    it('should have the correct type name', () => {
+        booleanListType.getTypeName().should.equal('BooleanList')
     })
 
-    it('should have the correct validator name', () => {
-        booleanListType.getValidatorName().should.equal('validate_booleanList')
-    })
-
-    it('should have the correct namespaced validator name', () => {
-        booleanListType.getNamespacedValidatorName().should.equal('Private.validate_booleanList')
-    })
-
-    it('should depend on the primitive type', () => {
+    it('should have the correct dependencies', () => {
         booleanListType.getDependencies().should.eql([booleanType])
+    })
+
+    it('should not have any references', () => {
+        booleanListType.getReferences().should.eql([])
     })
 })

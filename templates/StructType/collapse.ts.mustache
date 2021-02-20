@@ -3,11 +3,3 @@ export type {{{name}}} = {
     {{{name}}}: {{{type}}},
 {{/properties}}
 };
-
-export function {{{collapser}}}(resolved: {{{internalPrefix}}}Resolved.{{{name}}}): {{{name}}} {
-    return {
-    {{#properties}}
-        {{{name}}}: {{{collapser}}}(resolved!.{{{name}}}),
-    {{/properties}}
-    };
-}

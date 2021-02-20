@@ -1,23 +1,19 @@
-import {stringDictionaryType, stringType} from "../../../../src"
+import {DictionaryType, stringDictionaryType, stringType} from "../../../../src"
 
 describe('stringDictionaryType', () => {
-    it('should have the correct validation type name', () => {
-        stringDictionaryType.getTypeName().should.equal('{[key: string]: string}')
+    it('should be a DictionaryType', () => {
+        stringDictionaryType.should.be.an.instanceof(DictionaryType)
     })
 
-    it('should have the correct namespaced validation type name', () => {
-        stringDictionaryType.getNamespacedTypeName().should.equal('{[key: string]: string}')
+    it('should have the correct type name', () => {
+        stringDictionaryType.getTypeName().should.equal('StringDictionary')
     })
 
-    it('should have the correct validator name', () => {
-        stringDictionaryType.getValidatorName().should.equal('validate_stringDictionary')
-    })
-
-    it('should have the correct namespaced validator name', () => {
-        stringDictionaryType.getNamespacedValidatorName().should.equal('Private.validate_stringDictionary')
-    })
-
-    it('should depend on the primitive type', () => {
+    it('should have the correct dependencies', () => {
         stringDictionaryType.getDependencies().should.eql([stringType])
+    })
+
+    it('should not have any references', () => {
+        stringDictionaryType.getReferences().should.eql([])
     })
 })

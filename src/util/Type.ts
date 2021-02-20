@@ -8,7 +8,7 @@ export abstract class Type {
     }
 
     abstract writeValidateCode(exports: number): Promise<void>
-    abstract writeResolveCode(exports: number, references: Reference[]): Promise<void>
+    abstract writeResolveCode(exports: number): Promise<void>
     abstract writeCollapseCode(exports: number): Promise<void>
     abstract getDependencies(): Type[]
     abstract getReferences(): Reference[]
@@ -27,9 +27,5 @@ export abstract class Type {
 
     getResolverName(): string {
         return `resolve_${this.name}`
-    }
-
-    getCollapserName(): string {
-        return `collapse_${this.name}`
     }
 }

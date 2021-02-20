@@ -1,56 +1,26 @@
-import * as Validated from "./{{{validated}}}";
 import * as Resolved from "./{{{resolved}}}";
-import * as Collapsed from "./{{{collapsed}}}";
+import * as References from "./{{{references}}}";
 
-export function resolveAll(validatedReferences: {
-{{#references}}
-    {{{name}}}: {[key: string]: Validated.{{{type}}} },
-{{/references}}
-}): {
-{{#references}}
-    {{{name}}}: {[key: string]: Collapsed.{{{type}}} },
-{{/references}}
-} {
-    const resolvedReferences: {
-{{#references}}
-        {{{name}}}: {[key: string]: Resolved.{{{type}}} },
-{{/references}}
-    } = {
-{{#references}}
+export function resolveAll(validatedReferences: References.ValidatedReferences): References.CollapsedReferences {
+    const resolvedReferences: References.ResolvedReferences = {
+{{#referencesData}}
         {{{name}}}: {},
-{{/references}}
+{{/referencesData}}
     };
 
-    const collapsedReferences: {
-{{#references}}
-        {{{name}}}: {[key: string]: Collapsed.{{{type}}} },
-{{/references}}
-    } = {
-{{#references}}
-        {{{name}}}: {},
-{{/references}}
-    };
-
-{{#references}}
-    const validated_{{{name}}}: {[key: string]: Validated.{{{type}}} } = validatedReferences.{{{name}}};
-    const resolved_{{{name}}}: {[key: string]: Resolved.{{{type}}} } = resolvedReferences.{{{name}}};
-    const collapsed_{{{name}}}: {[key: string]: Collapsed.{{{type}}} } = collapsedReferences.{{{name}}};
+{{#referencesData}}
+    const validated_{{{name}}} = validatedReferences.{{{name}}};
+    const resolved_{{{name}}} = resolvedReferences.{{{name}}};
     for (const key in validated_{{{name}}}) {
         resolved_{{{name}}}[key] = Resolved.{{{initializer}}}(validated_{{{name}}}[key]);
     }
-{{/references}}
+{{/referencesData}}
 
-{{#references}}
+{{#referencesData}}
     for (const key in validated_{{{name}}}) {
         resolved_{{{name}}}[key] = Resolved.{{{resolver}}}(resolved_{{{name}}}[key], validated_{{{name}}}[key], resolvedReferences);
     }
-{{/references}}
+{{/referencesData}}
 
-{{#references}}
-    for (const key in resolved_{{{name}}}) {
-        collapsed_{{{name}}}[key] = Collapsed.{{{collapser}}}(resolved_{{{name}}}[key]);
-    }
-{{/references}}
-
-    return collapsedReferences;
+    return <References.CollapsedReferences> resolvedReferences;
 }

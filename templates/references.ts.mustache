@@ -1,0 +1,27 @@
+import * as Validated from "./{{{validated}}}";
+import * as Resolved from "./{{{resolved}}}";
+import * as Collapsed from "./{{{collapsed}}}";
+
+{{#referencesData}}
+export type ValidatedReference_{{{name}}} = {[key: string]: Validated.{{{type}}} };
+export type ResolvedReference_{{{name}}} = {[key: string]: Resolved.{{{type}}} };
+export type CollapsedReference_{{{name}}} = {[key: string]: Collapsed.{{{type}}} };
+{{/referencesData}}
+
+export type ValidatedReferences = {
+{{#referencesData}}
+    {{{name}}}: ValidatedReference_{{{name}}},
+{{/referencesData}}
+};
+
+export type ResolvedReferences = {
+{{#referencesData}}
+    {{{name}}}: ResolvedReference_{{{name}}},
+{{/referencesData}}
+};
+
+export type CollapsedReferences = {
+{{#referencesData}}
+    {{{name}}}: CollapsedReference_{{{name}}},
+{{/referencesData}}
+};

@@ -3,10 +3,6 @@ import {
     INTERNAL_PREFIX,
     TEMPLATES_DIR,
     Reference,
-    VALIDATE,
-    RESOLVE,
-    COLLAPSE,
-    UTIL_DIR
 } from "../internal";
 import {join} from "path";
 import {readFileSync} from "fs";
@@ -33,42 +29,32 @@ export class PrimitiveType extends Type {
         return [];
     }
 
-    async writeResolveCode(exports: number, references: Reference[]): Promise<void> {
+    /* istanbul ignore next */
+    async writeResolveCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(RESOLVE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
+            typedef: this.typedef,
             initializer: this.getInitializerName(),
             resolver: this.getResolverName(),
-            references,
         }))
     }
 
+    /* istanbul ignore next */
     async writeValidateCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(VALIDATE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             typedef: this.typedef,
             name: this.getTypeName(),
             validator: this.getValidatorName(),
         }))
     }
 
+    /* istanbul ignore next */
     async writeCollapseCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(COLLAPSE_CODE, {
-            internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
-            collapser: this.getCollapserName(),
+            typedef: this.typedef,
         }))
     }
 }

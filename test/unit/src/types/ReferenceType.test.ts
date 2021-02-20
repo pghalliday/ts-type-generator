@@ -1,15 +1,15 @@
-import {ListType} from "../../../../src"
+import {ReferenceType} from "../../../../src"
 import {TestType} from "../../TestType";
 import {Type} from "../../../../src/util/Type";
 
-const NAME = 'MyListType'
+const NAME = 'MyReferenceType'
 const TYPE = new TestType('Type')
 
-describe('ListType', () => {
-    let instance: ListType
+describe('ReferenceType', () => {
+    let instance: ReferenceType
 
     before(() => {
-        instance = new ListType(NAME, TYPE)
+        instance = new ReferenceType(NAME, TYPE)
     })
 
     it('should be a type', () => {
@@ -24,7 +24,12 @@ describe('ListType', () => {
         instance.getDependencies().should.eql([TYPE])
     })
 
-    it('should not have any references', () => {
-        instance.getReferences().should.eql([])
+    it('should have the correct references', () => {
+        instance.getReferences().should.eql([{
+            name: NAME,
+            type: TYPE.getTypeName(),
+            initializer: TYPE.getInitializerName(),
+            resolver: TYPE.getResolverName(),
+        }])
     })
 })

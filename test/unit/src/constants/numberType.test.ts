@@ -1,23 +1,20 @@
 import {numberType} from "../../../../src";
+import {Type} from "../../../../src/util/Type";
 
 describe('numberType', () => {
-    it('should have the correct validation type name', () => {
-        numberType.getTypeName().should.equal('number')
+    it('should be a Type', () => {
+        numberType.should.be.an.instanceof(Type)
     })
 
-    it('should have the correct namespaced validation type name', () => {
-        numberType.getNamespacedTypeName().should.equal('number')
+    it('should have the correct type name', () => {
+        numberType.getTypeName().should.equal('NumberType')
     })
 
-    it('should have the correct validator name', () => {
-        numberType.getValidatorName().should.equal('validate_number')
-    })
-
-    it('should have the correct namespaced validator name', () => {
-        numberType.getNamespacedValidatorName().should.equal('Private.validate_number')
-    })
-
-    it('should not have dependencies', () => {
+    it('should not have any dependencies', () => {
         numberType.getDependencies().should.eql([])
+    })
+
+    it('should not have any references', () => {
+        numberType.getReferences().should.eql([])
     })
 })

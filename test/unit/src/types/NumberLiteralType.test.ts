@@ -1,57 +1,29 @@
-import {NumberLiteralType, numberType} from "../../../../src"
+import {LiteralType} from "../../../../src"
+import {Type} from "../../../../src/util/Type";
 
-const TYPE_NAME = 'MyNumberLiteralType'
-const GENERATED_VALIDATOR_NAME_REGEXP = new RegExp('^validatenumberLiteral_[0-9]+$')
+const NAME = 'MyNumberLiteralType'
 const VALUE = 100
 
 describe('NumberLiteralType', () => {
-    let instance: NumberLiteralType
+    let instance: LiteralType<number>
 
-    describe('with name', () => {
-        beforeEach(async () => {
-            instance = new NumberLiteralType(VALUE, TYPE_NAME)
-        })
-
-        it('should have the correct validation type name', () => {
-            instance.getTypeName().should.equal(TYPE_NAME)
-        })
-
-        it('should have the correct namespaced validation type name', () => {
-            instance.getNamespacedTypeName().should.equal(`Public.${instance.getTypeName()}`)
-        })
-
-        it('should have the correct validator name', () => {
-            instance.getValidatorName().should.equal(`validate${instance.getTypeName()}`)
-        })
-
-        it('should have the correct namespaced validator name', () => {
-            instance.getNamespacedValidatorName().should.equal(`Public.${instance.getValidatorName()}`)
-        })
-
-        it('should depend on the primitive type', () => {
-            instance.getDependencies().should.eql([numberType])
-        })
+    before(() => {
+        instance = new LiteralType<number>(NAME, VALUE)
     })
 
-    describe('when anonymous', () => {
-        beforeEach(async () => {
-            instance = new NumberLiteralType(VALUE)
-        })
+    it('should be a type', () => {
+        instance.should.be.an.instanceof(Type)
+    })
 
-        it('should have the value as its validation type name', () => {
-            instance.getTypeName().should.equal(JSON.stringify(VALUE))
-        })
+    it('should have the correct name', () => {
+        instance.getTypeName().should.equal(NAME)
+    })
 
-        it('should have the correct namespaced validation type name', () => {
-            instance.getNamespacedTypeName().should.equal(instance.getTypeName())
-        })
+    it('should not have any dependencies', () => {
+        instance.getDependencies().should.eql([])
+    })
 
-        it('should have a generated validator name', () => {
-            instance.getValidatorName().should.match(GENERATED_VALIDATOR_NAME_REGEXP)
-        })
-
-        it('should have the correct namespaced validator name', () => {
-            instance.getNamespacedValidatorName().should.equal(`Private.${instance.getValidatorName()}`)
-        })
+    it('should not have any references', () => {
+        instance.getReferences().should.eql([])
     })
 })

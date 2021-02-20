@@ -3,7 +3,7 @@ import {
     Primitive,
     INTERNAL_PREFIX,
     TEMPLATES_DIR,
-    Reference, VALIDATE, RESOLVE, COLLAPSE, UTIL_DIR,
+    Reference,
 } from "../internal";
 import {join} from "path";
 import {readFileSync} from "fs";
@@ -31,27 +31,21 @@ export class LiteralType<T extends Primitive> extends Type {
         return [];
     }
 
-    async writeResolveCode(exports: number, references: Reference[]): Promise<void> {
+    /* istanbul ignore next */
+    async writeResolveCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(RESOLVE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
+            value: JSON.stringify(this.value),
             initializer: this.getInitializerName(),
             resolver: this.getResolverName(),
-            references,
         }))
     }
 
+    /* istanbul ignore next */
     async writeValidateCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(VALIDATE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             typedef: typeof this.value,
             name: this.getTypeName(),
             value: JSON.stringify(this.value),
@@ -59,15 +53,11 @@ export class LiteralType<T extends Primitive> extends Type {
         }))
     }
 
+    /* istanbul ignore next */
     async writeCollapseCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(COLLAPSE_CODE, {
-            internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
-            collapser: this.getCollapserName(),
+            value: JSON.stringify(this.value),
         }))
     }
 }

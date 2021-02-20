@@ -1,23 +1,19 @@
-import {stringListType, stringType} from "../../../../src"
+import {ListType, stringListType, stringType} from "../../../../src"
 
 describe('stringListType', () => {
-    it('should have the correct validation type name', () => {
-        stringListType.getTypeName().should.equal('(string)[]')
+    it('should be a ListType', () => {
+        stringListType.should.be.an.instanceof(ListType)
     })
 
-    it('should have the correct namespaced validation type name', () => {
-        stringListType.getNamespacedTypeName().should.equal('(string)[]')
+    it('should have the correct type name', () => {
+        stringListType.getTypeName().should.equal('StringList')
     })
 
-    it('should have the correct validator name', () => {
-        stringListType.getValidatorName().should.equal('validate_stringList')
-    })
-
-    it('should have the correct namespaced validator name', () => {
-        stringListType.getNamespacedValidatorName().should.equal('Private.validate_stringList')
-    })
-
-    it('should depend on the primitive type', () => {
+    it('should have the correct dependencies', () => {
         stringListType.getDependencies().should.eql([stringType])
+    })
+
+    it('should not have any references', () => {
+        stringListType.getReferences().should.eql([])
     })
 })

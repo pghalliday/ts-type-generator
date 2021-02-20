@@ -5,7 +5,6 @@ import {
     collectTypes,
     collectReferences,
     Reference,
-    VALIDATE, RESOLVE, COLLAPSE, UTIL_DIR
 } from "../internal";
 import map from "lodash/map"
 import Mustache from "mustache";
@@ -22,6 +21,7 @@ const COLLAPSE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'collapse.ts.mustach
 
 export class UnionError extends Error {}
 
+/* istanbul ignore next */
 function checkForReferences(types: Type[]): void {
     if (collectReferences(collectTypes(types)).length > 0) throw new UnionError('Union types cannot contain reference types')
 }
@@ -29,6 +29,7 @@ function checkForReferences(types: Type[]): void {
 export class UnionType extends Type {
     private readonly types: Type[] = []
 
+    /* istanbul ignore next */
     private getTypeDef(): string {
         return map(this.types, type => type.getTypeName()).join(UNION_SEPARATOR)
     }
@@ -46,29 +47,22 @@ export class UnionType extends Type {
         return [];
     }
 
-    async writeResolveCode(exports: number, references: Reference[]): Promise<void> {
+    /* istanbul ignore next */
+    async writeResolveCode(exports: number): Promise<void> {
         checkForReferences(this.types)
         await write(exports, Mustache.render(RESOLVE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
             initializer: this.getInitializerName(),
             resolver: this.getResolverName(),
             types: map(this.types, type => type.getTypeName()),
-            references,
         }))
     }
 
+    /* istanbul ignore next */
     async writeValidateCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(VALIDATE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
             typedef: this.getTypeDef(),
             validator: this.getValidatorName(),
@@ -79,15 +73,10 @@ export class UnionType extends Type {
         }))
     }
 
+    /* istanbul ignore next */
     async writeCollapseCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(COLLAPSE_CODE, {
-            internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
-            collapser: this.getCollapserName(),
             types: map(this.types, type => type.getTypeName()),
         }))
     }

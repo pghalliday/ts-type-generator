@@ -3,10 +3,6 @@ import {
     INTERNAL_PREFIX,
     TEMPLATES_DIR,
     Reference,
-    VALIDATE,
-    RESOLVE,
-    COLLAPSE,
-    UTIL_DIR
 } from "../internal";
 import Mustache from "mustache";
 import {readFileSync} from "fs";
@@ -43,13 +39,10 @@ export class StructType extends Type {
         return [];
     }
 
-    async writeResolveCode(exports: number, references: Reference[]): Promise<void> {
+    /* istanbul ignore next */
+    async writeResolveCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(RESOLVE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
             initializer: this.getInitializerName(),
             resolver: this.getResolverName(),
@@ -59,17 +52,13 @@ export class StructType extends Type {
                 initializer: property.type.getInitializerName(),
                 resolver: property.type.getResolverName(),
             })),
-            references,
         }))
     }
 
+    /* istanbul ignore next */
     async writeValidateCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(VALIDATE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
             validator: this.getValidatorName(),
             properties: map(this.properties, property => ({
@@ -80,19 +69,13 @@ export class StructType extends Type {
         }))
     }
 
+    /* istanbul ignore next */
     async writeCollapseCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(COLLAPSE_CODE, {
-            internalPrefix: INTERNAL_PREFIX,
-            validatedDir: VALIDATE,
-            resolvedDir: RESOLVE,
-            collapsedDir: COLLAPSE,
-            utilDir: UTIL_DIR,
             name: this.getTypeName(),
-            collapser: this.getCollapserName(),
             properties: map(this.properties, property => ({
                 name: property.name,
                 type: property.type.getTypeName(),
-                collapser: property.type.getCollapserName(),
             })),
         }))
     }

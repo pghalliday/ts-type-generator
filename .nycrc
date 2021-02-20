@@ -4,7 +4,9 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/TsTypeGenerator.ts"
+    "src/TsTypeGenerator.ts",
+    "src/util/collectTypes.ts",
+    "src/util/collectReferences.ts"
   ],
   "check-coverage": false,
   "lines": 100,

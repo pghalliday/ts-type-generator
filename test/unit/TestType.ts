@@ -1,30 +1,16 @@
 import {Type} from "../../src/util/Type";
-import {Collection} from "../../src/util/Collection";
+import {Reference} from "../../src/util/Reference";
 
-export class TestType implements Type {
-    private readonly name: string
-
-    constructor(name: string) {
-        this.name = name
+export class TestType extends Type {
+    getDependencies(): Type[] {
+        return [];
     }
 
-    getTypeName(): string {
-        return this.name
+    getReferences(): Reference[] {
+        return [];
     }
 
-    getNamespacedTypeName(): string {
-        return `Private.${this.getTypeName()}`
-    }
-
-    getValidatorName(): string {
-        return `validate${this.getTypeName()}`
-    }
-
-    getNamespacedValidatorName(): string {
-        return `Private.${this.getValidatorName()}`
-    }
-
-    async writeValidateCode(): Promise<void> {
+    async writeCollapseCode(): Promise<void> {
         // do nothing
     }
 
@@ -32,11 +18,7 @@ export class TestType implements Type {
         // do nothing
     }
 
-    getDependencies(): Type[] {
-        return []
-    }
-
-    getReferences(): Collection[] {
-        return []
+    async writeValidateCode(): Promise<void> {
+        // do nothing
     }
 }
