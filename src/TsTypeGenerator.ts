@@ -10,7 +10,8 @@ import {
     UTIL_DIR,
     INTERNAL_PREFIX,
     REFERENCES,
-    RESOLVE_ALL,
+    RESOLVER,
+    VALIDATOR,
 } from './internal'
 import {close, copy, open, outputFile, write} from "fs-extra";
 import {join} from 'path'
@@ -20,7 +21,9 @@ import {readFileSync} from "fs";
 const VALIDATE_CODE = readFileSync(join(TEMPLATES_DIR, 'validate.ts.mustache')).toString()
 const RESOLVE_CODE = readFileSync(join(TEMPLATES_DIR, 'resolve.ts.mustache')).toString()
 const REFERENCES_CODE = readFileSync(join(TEMPLATES_DIR, 'references.ts.mustache')).toString()
-const RESOLVE_REFERENCES_CODE = readFileSync(join(TEMPLATES_DIR, 'resolveReferences.ts.mustache')).toString()
+const RESOLVER_CODE = readFileSync(join(TEMPLATES_DIR, 'Resolver.ts.mustache')).toString()
+const VALIDATOR_CODE = readFileSync(join(TEMPLATES_DIR, 'Validator.ts.mustache')).toString()
+const INDEX_CODE = readFileSync(join(TEMPLATES_DIR, 'index.ts.mustache')).toString()
 
 export class TsTypeGenerator {
     private readonly types: Type[] = []
@@ -64,13 +67,32 @@ export class TsTypeGenerator {
             validated: VALIDATE,
             resolved: RESOLVE,
             collapsed: COLLAPSE,
+            utilDir: UTIL_DIR,
             referencesData: references,
         }))
-        await outputFile(join(outputDir, RESOLVE_ALL + '.ts'), Mustache.render(RESOLVE_REFERENCES_CODE, {
+        await outputFile(join(outputDir, RESOLVER + '.ts'), Mustache.render(RESOLVER_CODE, {
+            validated: VALIDATE,
             resolved: RESOLVE,
             collapsed: COLLAPSE,
             references: REFERENCES,
+            utilDir: UTIL_DIR,
             referencesData: references,
+        }))
+        await outputFile(join(outputDir, VALIDATOR + '.ts'), Mustache.render(VALIDATOR_CODE, {
+            validated: VALIDATE,
+            resolver: RESOLVER,
+            utilDir: UTIL_DIR,
+            references: REFERENCES,
+            referencesData: references,
+        }))
+        await outputFile(join(outputDir, 'index.ts'), Mustache.render(INDEX_CODE, {
+            validated: VALIDATE,
+            resolved: RESOLVE,
+            collapsed: COLLAPSE,
+            references: REFERENCES,
+            resolver: RESOLVER,
+            validator: VALIDATOR,
+            utilDir: UTIL_DIR,
         }))
     }
 }

@@ -20,20 +20,20 @@ npm install --save-dev @pghalliday/ts-type-generator
 Then to get started create a `./types/src` directory and add an `trueType.test.ts` file to it with the following content:
 
 ```typescript
-// ./types/types/index.ts
+// ./types/types/index.ts.mustache
 
 import {resolve} from "path";
 import {TsTypeGenerator} from "@pghalliday/ts-type-generator";
 
 new TsTypeGenerator()
     // TODO: add types here
-    .generate(resolve(__dirname, "../index.ts"));
+    .generate(resolve(__dirname, "../index.ts.mustache"));
 ```
 
 You can then run this using `ts-node`:
 
 ```shell
-ts-node ./types/types/index.ts
+ts-node ./types/types/index.ts.mustache
 ```
 
 As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/trueType.test.ts` module and copy in some utility functions for use in generated type guards.
@@ -62,7 +62,7 @@ new TsTypeGenerator()
             .property("userId", stringType)
             .property("message", stringType)
     )
-    .generate(resolve(__dirname, "../index.ts"));
+    .generate(resolve(__dirname, "../index.ts.mustache"));
 ```
 
 This will generate 2 types equivalent to this:
@@ -123,7 +123,7 @@ new TsTypeGenerator()
                     .property("lastName", stringType)
             )
     )
-    .generate(resolve(__dirname, "../index.ts"));
+    .generate(resolve(__dirname, "../index.ts.mustache"));
 ```
 
 Which will create a named type and type guard equivalent to:

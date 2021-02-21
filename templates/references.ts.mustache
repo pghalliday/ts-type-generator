@@ -1,6 +1,81 @@
 import * as Validated from "./{{{validated}}}";
 import * as Resolved from "./{{{resolved}}}";
 import * as Collapsed from "./{{{collapsed}}}";
+import * as Util from "./{{{utilDir}}}";
+
+export type Validators = {
+{{#referencesData}}
+    {{{name}}}: Util.Validator<Validated.{{{type}}}>,
+{{/referencesData}}
+};
+
+export const validators: Validators = {
+{{#referencesData}}
+    {{{name}}}: Validated.{{{validator}}},
+{{/referencesData}}
+};
+
+export type Resolvers = {
+{{#referencesData}}
+    {{{name}}}: Util.Resolver<Resolved.{{{type}}}, Validated.{{{type}}}>,
+{{/referencesData}}
+};
+
+export const resolvers: Resolvers = {
+{{#referencesData}}
+    {{{name}}}: Resolved.{{{resolver}}},
+{{/referencesData}}
+};
+
+export type ValidationUnknownData =
+{{#referencesData}}
+    {
+        reference: "{{{name}}}",
+        key: string,
+        data: unknown,
+    } |
+{{/referencesData}}
+    never;
+
+export type ValidationFailureData =
+{{#referencesData}}
+    {
+        reference: "{{{name}}}",
+        key: string,
+        error: Util.ValidationError,
+    } |
+{{/referencesData}}
+    never;
+
+export type ValidationSuccessData =
+{{#referencesData}}
+    {
+        reference: "{{{name}}}",
+        key: string,
+        instance: Validated.{{{type}}},
+    } |
+{{/referencesData}}
+    never;
+
+export type ResolutionFailureData =
+{{#referencesData}}
+    {
+        reference: "{{{name}}}",
+        key: string,
+        error: Util.ResolutionError,
+    } |
+{{/referencesData}}
+    never;
+
+export type ResolutionSuccessData =
+{{#referencesData}}
+    {
+        reference: "{{{name}}}",
+        key: string,
+        instance: Collapsed.{{{type}}},
+    } |
+{{/referencesData}}
+    never;
 
 {{#referencesData}}
 export type ValidatedReference_{{{name}}} = {[key: string]: Validated.{{{type}}} };
@@ -8,11 +83,61 @@ export type ResolvedReference_{{{name}}} = {[key: string]: Resolved.{{{type}}} }
 export type CollapsedReference_{{{name}}} = {[key: string]: Collapsed.{{{type}}} };
 {{/referencesData}}
 
+export type ValidationErrors = {
+{{#referencesData}}
+    {{{name}}}: {[key: string]: Util.ValidationError},
+{{/referencesData}}
+};
+
+export function initValidationErrors(): ValidationErrors {
+    return {
+    {{#referencesData}}
+        {{{name}}}: {},
+    {{/referencesData}}
+    };
+}
+
+export type ResolutionErrors = {
+{{#referencesData}}
+    {{{name}}}: {[key: string]: Util.ResolutionError},
+{{/referencesData}}
+};
+
+export function initResolutionErrors(): ResolutionErrors {
+    return {
+    {{#referencesData}}
+        {{{name}}}: {},
+    {{/referencesData}}
+    };
+}
+
+export type RawReferences = {
+{{#referencesData}}
+    {{{name}}}: {[key: string]: unknown},
+{{/referencesData}}
+};
+
+export function initRawReferences(): RawReferences {
+    return {
+    {{#referencesData}}
+        {{{name}}}: {},
+    {{/referencesData}}
+    };
+}
+
 export type ValidatedReferences = {
 {{#referencesData}}
     {{{name}}}: ValidatedReference_{{{name}}},
 {{/referencesData}}
 };
+
+export function initValidatedReferences(): ValidatedReferences {
+    return {
+    {{#referencesData}}
+        {{{name}}}: {},
+    {{/referencesData}}
+    };
+}
 
 export type ResolvedReferences = {
 {{#referencesData}}
@@ -20,8 +145,24 @@ export type ResolvedReferences = {
 {{/referencesData}}
 };
 
+export function initResolvedReferences(): ResolvedReferences {
+    return {
+    {{#referencesData}}
+        {{{name}}}: {},
+    {{/referencesData}}
+    };
+}
+
 export type CollapsedReferences = {
 {{#referencesData}}
     {{{name}}}: CollapsedReference_{{{name}}},
 {{/referencesData}}
 };
+
+export function initCollapsedReferences(): CollapsedReferences {
+    return {
+    {{#referencesData}}
+        {{{name}}}: {},
+    {{/referencesData}}
+    };
+}

@@ -1,0 +1,47 @@
+import * as Validated from "./{{{validated}}}";
+import * as Resolved from "./{{{resolved}}}";
+import * as Collapsed from "./{{{collapsed}}}";
+import * as References from "./{{{references}}}";
+import * as Util from "./{{{utilDir}}}";
+
+export class Resolver {
+    readonly success = new Util.Event<References.ResolutionSuccessData>();
+    readonly failure = new Util.Event<References.ResolutionFailureData>();
+
+    private readonly validatedReferences: References.ValidatedReferences = References.initValidatedReferences();
+    readonly resolvedReferences: References.ResolvedReferences = References.initResolvedReferences();
+
+    add(data: References.ValidationSuccessData): void {
+        this.validatedReferences[data.reference][data.key] = data.instance;
+    }
+
+    resolve(): void {
+    {{#referencesData}}
+        const validated_{{{name}}} = this.validatedReferences.{{{name}}};
+        const resolved_{{{name}}} = this.resolvedReferences.{{{name}}};
+        for (const key in validated_{{{name}}}) {
+            resolved_{{{name}}}[key] = Resolved.{{{initializer}}}(validated_{{{name}}}[key]);
+        }
+    {{/referencesData}}
+
+    {{#referencesData}}
+        for (const key in validated_{{{name}}}) {
+            const resolved = Resolved.{{{resolver}}}(resolved_{{{name}}}[key], validated_{{{name}}}[key], this.resolvedReferences);
+            if (resolved instanceof {{{internalPrefix}}}Util.ResolutionError) {
+                this.failure.emit({
+                    reference: "{{{name}}}",
+                    key,
+                    error: resolved,
+                });
+            } else {
+                resolved_{{{name}}}[key] = resolved;
+                this.success.emit({
+                    reference: "{{{name}}}",
+                    key,
+                    instance: <Collapsed.{{{type}}}> resolved,
+                });
+            }
+        }
+    {{/referencesData}}
+    }
+}

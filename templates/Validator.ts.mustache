@@ -1,0 +1,32 @@
+import * as Validated from "./{{{validated}}}";
+import * as Util from "./{{{utilDir}}}";
+import * as References from "./{{{references}}}";
+
+export class Validator {
+    readonly success = new Util.Event<References.ValidationSuccessData>();
+    readonly failure = new Util.Event<References.ValidationFailureData>();
+
+    validate(data: References.ValidationUnknownData): void {
+        switch (data.reference) {
+        {{#referencesData}}
+            case "{{{name}}}": {
+                const validated = Validated.{{{validator}}}(data.data);
+                if (validated instanceof Util.ValidationError) {
+                    this.failure.emit({
+                        reference: "{{{name}}}",
+                        key: data.key,
+                        error: validated,
+                    });
+                } else {
+                    this.success.emit({
+                        reference: "{{{name}}}",
+                        key: data.key,
+                        instance: validated,
+                    });
+                }
+                break;
+            }
+        {{/referencesData}}
+        }
+    }
+}

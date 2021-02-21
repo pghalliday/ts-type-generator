@@ -28,6 +28,7 @@ describe('ReferenceType', () => {
         instance.getReferences().should.eql([{
             name: NAME,
             type: TYPE.getTypeName(),
+            validator: TYPE.getValidatorName(),
             initializer: TYPE.getInitializerName(),
             resolver: TYPE.getResolverName(),
         }])

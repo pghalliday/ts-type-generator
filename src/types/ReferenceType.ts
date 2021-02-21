@@ -30,6 +30,7 @@ export class ReferenceType extends Type {
         return [{
             name: this.name,
             type: this.type.getTypeName(),
+            validator: this.type.getValidatorName(),
             initializer: this.type.getInitializerName(),
             resolver: this.type.getResolverName(),
         }];

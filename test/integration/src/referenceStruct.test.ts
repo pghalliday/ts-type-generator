@@ -2,7 +2,8 @@ import {
     Validated,
     Collapsed,
     References,
-    resolveReferences,
+    Validator,
+    Resolver,
 } from "./types";
 
 const booleanLiteral1: Validated.True = true
@@ -203,51 +204,141 @@ const invalidStructReference: References.ValidatedReference_StructReference = {
     key3: struct3,
 }
 
-const validReferences: References.ValidatedReferences = {
-    BooleanLiteralReference,
-    NumberLiteralReference,
-    StringLiteralReference,
-    BooleanReference,
-    NumberReference,
-    StringReference,
-    BooleanListReference,
-    NumberListReference,
-    StringListReference,
-    BooleanDictionaryReference,
-    NumberDictionaryReference,
-    StringDictionaryReference,
-    UnionReference,
-    StructReference,
-}
-
-const invalidReferences: References.ValidatedReferences = {
-    BooleanLiteralReference,
-    NumberLiteralReference,
-    StringLiteralReference,
-    BooleanReference,
-    NumberReference,
-    StringReference,
-    BooleanListReference,
-    NumberListReference,
-    StringListReference,
-    BooleanDictionaryReference,
-    NumberDictionaryReference,
-    StringDictionaryReference,
-    UnionReference,
-    StructReference: invalidStructReference,
-}
-
 describe('Types', () => {
     describe('referenceStruct', () => {
-        describe('resolveAll', () => {
+        describe('Resolver', () => {
+            let resolver: Resolver
+            let validator: Validator
+            let validationErrors: References.ValidationErrors
+            let resolutionErrors: References.ResolutionErrors
+            let collapsedReferences: References.CollapsedReferences
+
+            beforeEach(() => {
+                validationErrors = References.initValidationErrors()
+                resolutionErrors = References.initResolutionErrors()
+                collapsedReferences = References.initCollapsedReferences()
+                validator = new Validator()
+                resolver = new Resolver()
+                validator.success.on(data => resolver.add(data))
+                validator.failure.on(data => validationErrors[data.reference][data.key] = data.error)
+                resolver.success.on(data => collapsedReferences[data.reference][data.key] = data.instance)
+                resolver.failure.on(data => resolutionErrors[data.reference][data.key] = data.error)
+                for (const key in BooleanDictionaryReference) {
+                    validator.validate({
+                        reference: "BooleanDictionaryReference",
+                        key,
+                        data: BooleanDictionaryReference[key],
+                    })
+                }
+                for (const key in BooleanListReference) {
+                    validator.validate({
+                        reference: "BooleanListReference",
+                        key,
+                        data: BooleanListReference[key],
+                    })
+                }
+                for (const key in BooleanReference) {
+                    validator.validate({
+                        reference: "BooleanReference",
+                        key,
+                        data: BooleanReference[key],
+                    })
+                }
+                for (const key in BooleanLiteralReference) {
+                    validator.validate({
+                        reference: "BooleanLiteralReference",
+                        key,
+                        data: BooleanLiteralReference[key],
+                    })
+                }
+                for (const key in NumberDictionaryReference) {
+                    validator.validate({
+                        reference: "NumberDictionaryReference",
+                        key,
+                        data: NumberDictionaryReference[key],
+                    })
+                }
+                for (const key in NumberListReference) {
+                    validator.validate({
+                        reference: "NumberListReference",
+                        key,
+                        data: NumberListReference[key],
+                    })
+                }
+                for (const key in NumberReference) {
+                    validator.validate({
+                        reference: "NumberReference",
+                        key,
+                        data: NumberReference[key],
+                    })
+                }
+                for (const key in NumberLiteralReference) {
+                    validator.validate({
+                        reference: "NumberLiteralReference",
+                        key,
+                        data: NumberLiteralReference[key],
+                    })
+                }
+                for (const key in StringDictionaryReference) {
+                    validator.validate({
+                        reference: "StringDictionaryReference",
+                        key,
+                        data: StringDictionaryReference[key],
+                    })
+                }
+                for (const key in StringListReference) {
+                    validator.validate({
+                        reference: "StringListReference",
+                        key,
+                        data: StringListReference[key],
+                    })
+                }
+                for (const key in StringReference) {
+                    validator.validate({
+                        reference: "StringReference",
+                        key,
+                        data: StringReference[key],
+                    })
+                }
+                for (const key in StringLiteralReference) {
+                    validator.validate({
+                        reference: "StringLiteralReference",
+                        key,
+                        data: StringLiteralReference[key],
+                    })
+                }
+                for (const key in UnionReference) {
+                    validator.validate({
+                        reference: "UnionReference",
+                        key,
+                        data: UnionReference[key],
+                    })
+                }
+            })
+
             describe('with valid references', () => {
                 let collapsedStruct1: Collapsed.ReferenceStruct
                 let collapsedStruct2: Collapsed.ReferenceStruct
 
-                before(() => {
-                    const collapsedReferences = resolveReferences(validReferences)
+                beforeEach(() => {
+                    for (const key in StructReference) {
+                        validator.validate({
+                            reference: "StructReference",
+                            key,
+                            data: StructReference[key],
+                        })
+                    }
+                    resolver.resolve()
                     collapsedStruct1 = collapsedReferences.StructReference['key1']
                     collapsedStruct2 = collapsedReferences.StructReference['key2']
+                })
+
+                it('should not emit any validation errors', () => {
+                    validationErrors.should.eql(References.initValidationErrors())
+                })
+
+                it('should not emit any resolution errors', () => {
+                    resolutionErrors.should.eql(References.initResolutionErrors())
                 })
 
                 it('should correctly resolve boolean literal references', () => {
@@ -338,10 +429,25 @@ describe('Types', () => {
             })
 
             describe('with invalid references', () => {
-                it('should throw an error', () => {
-                    (() => {
-                        resolveReferences(invalidReferences)
-                    }).should.throw('key not found: BooleanLiteralReference/key3')
+                beforeEach(() => {
+                    for (const key in invalidStructReference) {
+                        validator.validate({
+                            reference: "StructReference",
+                            key,
+                            data: invalidStructReference[key],
+                        })
+                    }
+                    resolver.resolve()
+                })
+
+                it('should not emit any validation errors', () => {
+                    validationErrors.should.eql(References.initValidationErrors())
+                })
+
+                it('should emit a resolution error', () => {
+                    const error = resolutionErrors.StructReference['key3']
+                    error.message.should.eql('Error encountered resolving property: [booleanLiteralReference]')
+                    error.cause?.message.should.eql('Reference not found: [BooleanLiteralReference/key3]')
                 })
             })
         })
