@@ -174,6 +174,7 @@ async function getResolvedReferences(): Promise<{
     const resolvedReferences = References.initResolvedReferences();
     const validator = new Validator();
     const resolver = new Resolver();
+    // pipe the validated structures into the resolver
     validator.success.on(data => resolver.add(data));
     validator.failure.on(({reference, key, error}) => {
         // store error for later
