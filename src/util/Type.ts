@@ -7,9 +7,9 @@ export abstract class Type {
         this.name = name
     }
 
-    abstract writeValidateCode(exports: number): Promise<void>
-    abstract writeResolveCode(exports: number): Promise<void>
-    abstract writeCollapseCode(exports: number): Promise<void>
+    abstract writeValidatedCode(exports: number): Promise<void>
+    abstract writePartialCode(exports: number): Promise<void>
+    abstract writeResolvedCode(exports: number): Promise<void>
     abstract getDependencies(): Type[]
     abstract getReferences(): Reference[]
 

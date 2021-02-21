@@ -11,9 +11,9 @@ import map from 'lodash/map'
 import {write} from "fs-extra";
 
 const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'StructType')
-const VALIDATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validate.ts.mustache')).toString()
-const RESOLVE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'resolve.ts.mustache')).toString()
-const COLLAPSE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'collapse.ts.mustache')).toString()
+const VALIDATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validated.ts.mustache')).toString()
+const RESOLVE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'partial.ts.mustache')).toString()
+const COLLAPSE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'resolved.ts.mustache')).toString()
 
 type Property = {
     name: string,
@@ -40,7 +40,7 @@ export class StructType extends Type {
     }
 
     /* istanbul ignore next */
-    async writeResolveCode(exports: number): Promise<void> {
+    async writePartialCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(RESOLVE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
             name: this.getTypeName(),
@@ -56,7 +56,7 @@ export class StructType extends Type {
     }
 
     /* istanbul ignore next */
-    async writeValidateCode(exports: number): Promise<void> {
+    async writeValidatedCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(VALIDATE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
             name: this.getTypeName(),
@@ -70,7 +70,7 @@ export class StructType extends Type {
     }
 
     /* istanbul ignore next */
-    async writeCollapseCode(exports: number): Promise<void> {
+    async writeResolvedCode(exports: number): Promise<void> {
         await write(exports, Mustache.render(COLLAPSE_CODE, {
             name: this.getTypeName(),
             properties: map(this.properties, property => ({

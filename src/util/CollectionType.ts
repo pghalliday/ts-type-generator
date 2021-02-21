@@ -4,16 +4,16 @@ import {write} from "fs-extra";
 
 export class CollectionType extends Type {
     private readonly type: Type
-    private readonly resolveCode: string
-    private readonly validateCode: string
-    private readonly collapseCode: string
+    private readonly partialCode: string
+    private readonly validatedCode: string
+    private readonly resolvedCode: string
 
-    constructor(name: string, type: Type, resolveCode: string, validateCode: string, collapseCode: string) {
+    constructor(name: string, type: Type, partialCode: string, validatedCode: string, resolvedCode: string) {
         super(name)
         this.type = type
-        this.resolveCode = resolveCode
-        this.validateCode = validateCode
-        this.collapseCode = collapseCode
+        this.partialCode = partialCode
+        this.validatedCode = validatedCode
+        this.resolvedCode = resolvedCode
     }
 
     getReferences(): Reference[] {
@@ -25,8 +25,8 @@ export class CollectionType extends Type {
     }
 
     /* istanbul ignore next */
-    async writeResolveCode(exports: number): Promise<void> {
-        await write(exports, Mustache.render(this.resolveCode, {
+    async writePartialCode(exports: number): Promise<void> {
+        await write(exports, Mustache.render(this.partialCode, {
             internalPrefix: INTERNAL_PREFIX,
             name: this.getTypeName(),
             type: this.type.getTypeName(),
@@ -38,8 +38,8 @@ export class CollectionType extends Type {
     }
 
     /* istanbul ignore next */
-    async writeValidateCode(exports: number): Promise<void> {
-        await write(exports, Mustache.render(this.validateCode, {
+    async writeValidatedCode(exports: number): Promise<void> {
+        await write(exports, Mustache.render(this.validatedCode, {
             internalPrefix: INTERNAL_PREFIX,
             name: this.getTypeName(),
             type: this.type.getTypeName(),
@@ -49,8 +49,8 @@ export class CollectionType extends Type {
     }
 
     /* istanbul ignore next */
-    async writeCollapseCode(exports: number): Promise<void> {
-        await write(exports, Mustache.render(this.collapseCode, {
+    async writeResolvedCode(exports: number): Promise<void> {
+        await write(exports, Mustache.render(this.resolvedCode, {
             name: this.getTypeName(),
             type: this.type.getTypeName(),
         }))

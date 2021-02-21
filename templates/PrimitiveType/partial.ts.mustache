@@ -1,0 +1,9 @@
+export type {{{name}}} = undefined | {{{typedef}}};
+
+export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{name}}}): {{{name}}} {
+    return validated;
+}
+
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, partialReferences: {{{internalPrefix}}}References.PartialReferences): {{{name}}} | {{{internalPrefix}}}Util.ResolutionError {
+    return src;
+}

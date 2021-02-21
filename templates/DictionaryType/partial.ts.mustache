@@ -1,0 +1,19 @@
+export type {{{name}}} = undefined | {[key: string]: {{{type}}} };
+
+export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{name}}}): {{{name}}} {
+    const value: {{{name}}} = {};
+    for (const key in validated) {
+        value[key] = {{{typeInitializer}}}(validated[key]);
+    }
+    return value;
+}
+
+export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, partialReferences: {{{internalPrefix}}}References.PartialReferences): {{{name}}} | {{{internalPrefix}}}Util.ResolutionError {
+    {{{internalPrefix}}}assert.ok(typeof dest !== "undefined");
+    for (const key in src) {
+        const partial = {{{typeResolver}}}(dest[key], src[key], partialReferences);
+        if (partial instanceof {{{internalPrefix}}}Util.ResolutionError) return new {{{internalPrefix}}}Util.ResolutionError(`Error encountered resolving key: [${key}]`, partial);
+        dest[key] = partial;
+    }
+    return dest;
+}

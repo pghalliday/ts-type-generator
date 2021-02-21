@@ -1,31 +1,7 @@
 import * as Validated from "./{{{validated}}}";
+import * as Partial from "./{{{partial}}}";
 import * as Resolved from "./{{{resolved}}}";
-import * as Collapsed from "./{{{collapsed}}}";
 import * as Util from "./{{{utilDir}}}";
-
-export type Validators = {
-{{#referencesData}}
-    {{{name}}}: Util.Validator<Validated.{{{type}}}>,
-{{/referencesData}}
-};
-
-export const validators: Validators = {
-{{#referencesData}}
-    {{{name}}}: Validated.{{{validator}}},
-{{/referencesData}}
-};
-
-export type Resolvers = {
-{{#referencesData}}
-    {{{name}}}: Util.Resolver<Resolved.{{{type}}}, Validated.{{{type}}}>,
-{{/referencesData}}
-};
-
-export const resolvers: Resolvers = {
-{{#referencesData}}
-    {{{name}}}: Resolved.{{{resolver}}},
-{{/referencesData}}
-};
 
 export type ValidationUnknownData =
 {{#referencesData}}
@@ -72,15 +48,15 @@ export type ResolutionSuccessData =
     {
         reference: "{{{name}}}",
         key: string,
-        instance: Collapsed.{{{type}}},
+        instance: Resolved.{{{type}}},
     } |
 {{/referencesData}}
     never;
 
 {{#referencesData}}
 export type ValidatedReference_{{{name}}} = {[key: string]: Validated.{{{type}}} };
+export type PartialReference_{{{name}}} = {[key: string]: Partial.{{{type}}} };
 export type ResolvedReference_{{{name}}} = {[key: string]: Resolved.{{{type}}} };
-export type CollapsedReference_{{{name}}} = {[key: string]: Collapsed.{{{type}}} };
 {{/referencesData}}
 
 export type ValidationErrors = {
@@ -139,13 +115,13 @@ export function initValidatedReferences(): ValidatedReferences {
     };
 }
 
-export type ResolvedReferences = {
+export type PartialReferences = {
 {{#referencesData}}
-    {{{name}}}: ResolvedReference_{{{name}}},
+    {{{name}}}: PartialReference_{{{name}}},
 {{/referencesData}}
 };
 
-export function initResolvedReferences(): ResolvedReferences {
+export function initPartialReferences(): PartialReferences {
     return {
     {{#referencesData}}
         {{{name}}}: {},
@@ -153,13 +129,13 @@ export function initResolvedReferences(): ResolvedReferences {
     };
 }
 
-export type CollapsedReferences = {
+export type ResolvedReferences = {
 {{#referencesData}}
-    {{{name}}}: CollapsedReference_{{{name}}},
+    {{{name}}}: ResolvedReference_{{{name}}},
 {{/referencesData}}
 };
 
-export function initCollapsedReferences(): CollapsedReferences {
+export function initResolvedReferences(): ResolvedReferences {
     return {
     {{#referencesData}}
         {{{name}}}: {},

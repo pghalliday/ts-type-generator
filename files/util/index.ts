@@ -5,5 +5,3 @@ export * from "./validateProperty";
 export * from "./ValidationError";
 export * from "./ResolutionError";
 export * from "./Event";
-export * from "./Validator"
-export * from "./Resolver"

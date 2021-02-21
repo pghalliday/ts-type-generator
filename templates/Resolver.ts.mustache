@@ -1,6 +1,6 @@
 import * as Validated from "./{{{validated}}}";
+import * as Partial from "./{{{partial}}}";
 import * as Resolved from "./{{{resolved}}}";
-import * as Collapsed from "./{{{collapsed}}}";
 import * as References from "./{{{references}}}";
 import * as Util from "./{{{utilDir}}}";
 
@@ -9,7 +9,7 @@ export class Resolver {
     readonly failure = new Util.Event<References.ResolutionFailureData>();
 
     private readonly validatedReferences: References.ValidatedReferences = References.initValidatedReferences();
-    readonly resolvedReferences: References.ResolvedReferences = References.initResolvedReferences();
+    readonly partialReferences: References.PartialReferences = References.initPartialReferences();
 
     add(data: References.ValidationSuccessData): void {
         this.validatedReferences[data.reference][data.key] = data.instance;
@@ -18,27 +18,27 @@ export class Resolver {
     resolve(): void {
     {{#referencesData}}
         const validated_{{{name}}} = this.validatedReferences.{{{name}}};
-        const resolved_{{{name}}} = this.resolvedReferences.{{{name}}};
+        const partial_{{{name}}} = this.partialReferences.{{{name}}};
         for (const key in validated_{{{name}}}) {
-            resolved_{{{name}}}[key] = Resolved.{{{initializer}}}(validated_{{{name}}}[key]);
+            partial_{{{name}}}[key] = Partial.{{{initializer}}}(validated_{{{name}}}[key]);
         }
     {{/referencesData}}
 
     {{#referencesData}}
         for (const key in validated_{{{name}}}) {
-            const resolved = Resolved.{{{resolver}}}(resolved_{{{name}}}[key], validated_{{{name}}}[key], this.resolvedReferences);
-            if (resolved instanceof {{{internalPrefix}}}Util.ResolutionError) {
+            const partial = Partial.{{{resolver}}}(partial_{{{name}}}[key], validated_{{{name}}}[key], this.partialReferences);
+            if (partial instanceof {{{internalPrefix}}}Util.ResolutionError) {
                 this.failure.emit({
                     reference: "{{{name}}}",
                     key,
-                    error: resolved,
+                    error: partial,
                 });
             } else {
-                resolved_{{{name}}}[key] = resolved;
+                partial_{{{name}}}[key] = partial;
                 this.success.emit({
                     reference: "{{{name}}}",
                     key,
-                    instance: <Collapsed.{{{type}}}> resolved,
+                    instance: <Resolved.{{{type}}}> partial,
                 });
             }
         }

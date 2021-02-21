@@ -10,15 +10,15 @@ export class TestType extends Type {
         return [];
     }
 
-    async writeCollapseCode(): Promise<void> {
+    async writeResolvedCode(): Promise<void> {
         // do nothing
     }
 
-    async writeResolveCode(): Promise<void> {
+    async writePartialCode(): Promise<void> {
         // do nothing
     }
 
-    async writeValidateCode(): Promise<void> {
+    async writeValidatedCode(): Promise<void> {
         // do nothing
     }
 }

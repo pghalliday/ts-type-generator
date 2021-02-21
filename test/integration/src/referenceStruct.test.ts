@@ -1,6 +1,6 @@
 import {
     Validated,
-    Collapsed,
+    Resolved,
     References,
     Validator,
     Resolver,
@@ -211,17 +211,17 @@ describe('Types', () => {
             let validator: Validator
             let validationErrors: References.ValidationErrors
             let resolutionErrors: References.ResolutionErrors
-            let collapsedReferences: References.CollapsedReferences
+            let resolvedReferences: References.ResolvedReferences
 
             beforeEach(() => {
                 validationErrors = References.initValidationErrors()
                 resolutionErrors = References.initResolutionErrors()
-                collapsedReferences = References.initCollapsedReferences()
+                resolvedReferences = References.initResolvedReferences()
                 validator = new Validator()
                 resolver = new Resolver()
                 validator.success.on(data => resolver.add(data))
                 validator.failure.on(data => validationErrors[data.reference][data.key] = data.error)
-                resolver.success.on(data => collapsedReferences[data.reference][data.key] = data.instance)
+                resolver.success.on(data => resolvedReferences[data.reference][data.key] = data.instance)
                 resolver.failure.on(data => resolutionErrors[data.reference][data.key] = data.error)
                 for (const key in BooleanDictionaryReference) {
                     validator.validate({
@@ -317,8 +317,8 @@ describe('Types', () => {
             })
 
             describe('with valid references', () => {
-                let collapsedStruct1: Collapsed.ReferenceStruct
-                let collapsedStruct2: Collapsed.ReferenceStruct
+                let resolvedStruct1: Resolved.ReferenceStruct
+                let resolvedStruct2: Resolved.ReferenceStruct
 
                 beforeEach(() => {
                     for (const key in StructReference) {
@@ -329,8 +329,8 @@ describe('Types', () => {
                         })
                     }
                     resolver.resolve()
-                    collapsedStruct1 = collapsedReferences.StructReference['key1']
-                    collapsedStruct2 = collapsedReferences.StructReference['key2']
+                    resolvedStruct1 = resolvedReferences.StructReference['key1']
+                    resolvedStruct2 = resolvedReferences.StructReference['key2']
                 })
 
                 it('should not emit any validation errors', () => {
@@ -342,89 +342,89 @@ describe('Types', () => {
                 })
 
                 it('should correctly resolve boolean literal references', () => {
-                    collapsedStruct1.booleanLiteralReference.should.equal(booleanLiteral1)
-                    collapsedStruct2.booleanLiteralReference.should.equal(booleanLiteral2)
+                    resolvedStruct1.booleanLiteralReference.should.equal(booleanLiteral1)
+                    resolvedStruct2.booleanLiteralReference.should.equal(booleanLiteral2)
                 })
 
                 it('should correctly resolve number literal references', () => {
-                    collapsedStruct1.numberLiteralReference.should.equal(numberLiteral1)
-                    collapsedStruct2.numberLiteralReference.should.equal(numberLiteral2)
+                    resolvedStruct1.numberLiteralReference.should.equal(numberLiteral1)
+                    resolvedStruct2.numberLiteralReference.should.equal(numberLiteral2)
                 })
 
                 it('should correctly resolve string literal references', () => {
-                    collapsedStruct1.stringLiteralReference.should.equal(stringLiteral1)
-                    collapsedStruct2.stringLiteralReference.should.equal(stringLiteral2)
+                    resolvedStruct1.stringLiteralReference.should.equal(stringLiteral1)
+                    resolvedStruct2.stringLiteralReference.should.equal(stringLiteral2)
                 })
 
                 it('should correctly resolve boolean references', () => {
-                    collapsedStruct1.booleanReference.should.equal(boolean1)
-                    collapsedStruct2.booleanReference.should.equal(boolean2)
+                    resolvedStruct1.booleanReference.should.equal(boolean1)
+                    resolvedStruct2.booleanReference.should.equal(boolean2)
                 })
 
                 it('should correctly resolve number references', () => {
-                    collapsedStruct1.numberReference.should.equal(number1)
-                    collapsedStruct2.numberReference.should.equal(number2)
+                    resolvedStruct1.numberReference.should.equal(number1)
+                    resolvedStruct2.numberReference.should.equal(number2)
                 })
 
                 it('should correctly resolve string references', () => {
-                    collapsedStruct1.stringReference.should.equal(string1)
-                    collapsedStruct2.stringReference.should.equal(string2)
+                    resolvedStruct1.stringReference.should.equal(string1)
+                    resolvedStruct2.stringReference.should.equal(string2)
                 })
 
                 it('should correctly resolve boolean list references', () => {
-                    collapsedStruct1.booleanListReference.should.eql(booleanList1)
-                    collapsedStruct2.booleanListReference.should.eql(booleanList2)
+                    resolvedStruct1.booleanListReference.should.eql(booleanList1)
+                    resolvedStruct2.booleanListReference.should.eql(booleanList2)
                 })
 
                 it('should correctly resolve number list references', () => {
-                    collapsedStruct1.numberListReference.should.eql(numberList1)
-                    collapsedStruct2.numberListReference.should.eql(numberList2)
+                    resolvedStruct1.numberListReference.should.eql(numberList1)
+                    resolvedStruct2.numberListReference.should.eql(numberList2)
                 })
 
                 it('should correctly resolve string list references', () => {
-                    collapsedStruct1.stringListReference.should.eql(stringList1)
-                    collapsedStruct2.stringListReference.should.eql(stringList2)
+                    resolvedStruct1.stringListReference.should.eql(stringList1)
+                    resolvedStruct2.stringListReference.should.eql(stringList2)
                 })
 
                 it('should correctly resolve boolean dictionary references', () => {
-                    collapsedStruct1.booleanDictionaryReference.should.eql(booleanDictionary1)
-                    collapsedStruct2.booleanDictionaryReference.should.eql(booleanDictionary2)
+                    resolvedStruct1.booleanDictionaryReference.should.eql(booleanDictionary1)
+                    resolvedStruct2.booleanDictionaryReference.should.eql(booleanDictionary2)
                 })
 
                 it('should correctly resolve number dictionary references', () => {
-                    collapsedStruct1.numberDictionaryReference.should.eql(numberDictionary1)
-                    collapsedStruct2.numberDictionaryReference.should.eql(numberDictionary2)
+                    resolvedStruct1.numberDictionaryReference.should.eql(numberDictionary1)
+                    resolvedStruct2.numberDictionaryReference.should.eql(numberDictionary2)
                 })
 
                 it('should correctly resolve string dictionary references', () => {
-                    collapsedStruct1.stringDictionaryReference.should.eql(stringDictionary1)
-                    collapsedStruct2.stringDictionaryReference.should.eql(stringDictionary2)
+                    resolvedStruct1.stringDictionaryReference.should.eql(stringDictionary1)
+                    resolvedStruct2.stringDictionaryReference.should.eql(stringDictionary2)
                 })
 
                 it('should correctly resolve union references', () => {
-                    collapsedStruct1.unionReference.should.eql(union1)
-                    collapsedStruct2.unionReference.should.eql(union2)
+                    resolvedStruct1.unionReference.should.eql(union1)
+                    resolvedStruct2.unionReference.should.eql(union2)
                 })
 
                 it('should correctly resolve lists of references', () => {
-                    collapsedStruct1.stringReferenceList.should.eql([string1, string2])
-                    collapsedStruct2.stringReferenceList.should.eql([string2, string1])
+                    resolvedStruct1.stringReferenceList.should.eql([string1, string2])
+                    resolvedStruct2.stringReferenceList.should.eql([string2, string1])
                 })
 
                 it('should correctly resolve dictionaries of references', () => {
-                    collapsedStruct1.stringReferenceDictionary.should.eql({
+                    resolvedStruct1.stringReferenceDictionary.should.eql({
                         key1: string1,
                         key2: string2,
                     })
-                    collapsedStruct2.stringReferenceDictionary.should.eql({
+                    resolvedStruct2.stringReferenceDictionary.should.eql({
                         key1: string2,
                         key2: string1,
                     })
                 })
 
                 it('should correctly resolve circular references', () => {
-                    collapsedStruct1.circularReference.should.equal(collapsedStruct2)
-                    collapsedStruct2.circularReference.should.equal(collapsedStruct1)
+                    resolvedStruct1.circularReference.should.equal(resolvedStruct2)
+                    resolvedStruct2.circularReference.should.equal(resolvedStruct1)
                 })
             })
 
