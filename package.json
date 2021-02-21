@@ -1,7 +1,7 @@
 {
   "name": "@pghalliday/ts-type-generator",
   "version": "1.1.0",
-  "description": "A tool for generating TypeScript interfaces and types with associated type guards",
+  "description": "A tool for generating TypeScript types with associated validators and relational resolvers",
   "author": "Peter Halliday <pghalliday@gmail.com> (https://pghalliday.com)",
   "license": "ISC",
   "repository": {

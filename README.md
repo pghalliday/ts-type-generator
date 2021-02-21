@@ -3,11 +3,13 @@
 ![build](https://github.com/pghalliday/ts-type-generator/workflows/build/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/pghalliday/ts-type-generator/badge.svg?branch=main)](https://coveralls.io/github/pghalliday/ats-type-generatorbranch=main)
 
-A tool for generating TypeScript interfaces and types with associated type guards.
+A tool for generating TypeScript types with associated validators and relational resolvers.
 
-The main use case for this library is to generate data interfaces to match structures that might be loaded from JSON sources. The problem being that `JSON.parse` will always return an `any` and as such this should be type guarded to bring it into our nice type safe world.
+The main use case for this library is to generate data types to match structures that might be loaded from JSON sources. The problem being that `JSON.parse` will always return an `any` and as such this should be type guarded to bring it into our nice type safe world.
 
-Unfortunately writing type guards is a chore and generating type guards by analysing source code is problematic. To get around this `ts-type-generator` provides a DSL to define interfaces and types as code that can then be used to generate the type and type guard source code together as a build step.
+Unfortunately writing type guards is a chore and generating type guards by analysing source code is problematic. To get around this `ts-type-generator` provides a DSL to define types as code that can then be used to generate the type and validation source code together as a build step.
+
+Additionally, it provides a special `ReferenceType` to create relationships between collections of typed data and generates a `Resolver` class to check and resolve those references.
 
 ## Usage
 
@@ -17,17 +19,17 @@ Install into your `devDependencies`:
 npm install --save-dev @pghalliday/ts-type-generator
 ```
 
-Then to get started create a `./types/src` directory and add an `trueType.test.ts` file to it with the following content:
+Then to get started create a `./types/src` directory and add an `index.ts` file to it with the following content:
 
 ```typescript
-// ./types/types/index.ts.mustache
+// ./types/index.ts
 
 import {resolve} from "path";
 import {TsTypeGenerator} from "@pghalliday/ts-type-generator";
 
 new TsTypeGenerator()
     // TODO: add types here
-    .generate(resolve(__dirname, "../index.ts.mustache"));
+    .generate(resolve(__dirname, "../lib"));
 ```
 
 You can then run this using `ts-node`:
@@ -36,7 +38,7 @@ You can then run this using `ts-node`:
 ts-node ./types/types/index.ts.mustache
 ```
 
-As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/trueType.test.ts` module and copy in some utility functions for use in generated type guards.
+As it stands this will not create any types or type guards as none have been defined. However, it will create a `./types/lib` directory and copy in some utility libraries, etc.
 
 ### Adding types
 
@@ -47,46 +49,46 @@ As an example we will add a couple of interfaces to our example code from above:
 ```typescript
 import {
     TsTypeGenerator,
-    InterfaceType,
+    StructType,
     stringType,
 } from "@pghalliday/ts-type-generator";
 
 new TsTypeGenerator()
     .type(
-        new InterfaceType("User")
+        new StructType("User")
             .property("id", stringType)
             .property("displayName", stringType)
     )
     .type(
-        new InterfaceType("Message")
+        new StructType("Message")
             .property("userId", stringType)
             .property("message", stringType)
     )
-    .generate(resolve(__dirname, "../index.ts.mustache"));
+    .generate(resolve(__dirname, "../lib"));
 ```
 
 This will generate 2 types equivalent to this:
 
 ```typescript
-export interface User {
-    id: string;
-    displayName: string;
+export type User = {
+    id: string,
+    displayName: string,
 }
 
-export interface Message {
-    userId: string;
-    message: string;
+export type Message = {
+    userId: string,
+    message: string,
 }
 ```
 
-It will also generate 2 type guards with the following signatures:
+It will also generate 2 validator functions with the following signatures:
 
 ```typescript
-export function isUser(value: unknown): value is User {
+export function validateUser(value: unknown): User | ValidationError {
     ...
 }
 
-export function isMessage(value: unknown): value is Message {
+export function validateMessage(value: unknown): Message | ValidationError {
     ...
 }
 ```
@@ -94,52 +96,143 @@ export function isMessage(value: unknown): value is Message {
 You can import them like this:
 
 ```typescript
-import {User, isUser, Message, isMessage} from "./types";
+import {Validated, ValidationError} from "./types/lib";
+const {User, validateUser, Message, validateMessage} = Validated;
 ```
 
-So what's happening here. Well the main thing to know is that any number of types can be added and each type, and the types they depend on, will be added to the generated types module.
+So what's happening here. Well the main thing to know is that any number of types can be added and each type, and the types they depend on, will be added to the generated types modules.
 
 Types all have the same base `Type` class, so they can be re-used wherever a type is required.
 
 Some primitive types are provided as constants. Here we are using the `stringType` as an alias for `string`. We have to use an instance of `Type` so this has been created as a singleton for convenience.
 
-### Anonymous types
+### Reference types
 
-When defining types and sub-types, you may not always care what they are called. As such, type names are always optional. As it happens, when the type file is generated, a name will also be generated but this is an internal implementation detail. Anonymous types will not be exported from the types module.
+So far we have defined a couple of types, and we have a way to pass in some unknown data and validate it safely to create some properly typed data. However we have defined 2 types that are related. The `userId` on the `Message` is meant to be a reference to the `id` property on the `User` type.
 
-For example to create a more complex structure where we only care about the top level type name:
+The `ReferenceType` class can be used to enforce this relationship between collections of `User` and `Message` structures. We can change the definitions as follows:
 
 ```typescript
-import {stringType} from "./stringType";
+import {
+    TsTypeGenerator,
+    StructType,
+    ReferenceType,
+    stringType,
+} from "@pghalliday/ts-type-generator";
+
+const userType = new StructType("User")
+    .property("id", stringType)
+    .property("displayName", string);
+
+const usersReference = new ReferenceType("Users", userType);
+
+const messageType = new StructType("Message")
+    .property("id", string)
+    .property("userId", usersReference)
+    .property("message", stringType);
+
+const messagesReference = new ReferenceType("Messages", messageType);
 
 new TsTypeGenerator()
-    .type(
-        new InterfaceType("User")
-            .property("id", stringType)
-            .property(
-                "name",
-                new Interface()
-                    .property("firstName", stringType)
-                    .property("lastName", stringType)
-            )
-    )
-    .generate(resolve(__dirname, "../index.ts.mustache"));
+    .type(usersReference)
+    .type(messagesReference)
+    .generate(resolve(__dirname, "../lib"));
+}
 ```
 
-Which will create a named type and type guard equivalent to:
+Note that we created a `ReferenceType` for each collection. This is required even for the `Message` struct because we want our generated code to support collections of messages too (even if we don't have references to them... yet).
+
+Also note that we have not specified a field that defines the reference key. Obviously we will want to use the user `id` property but in fact the generated code does not care what key you use, so this is left as an implementation detail for the collection based validation and resolution code.
+
+So, given collections of users and messages how do we validate the data and resolve the references. Well, the call to `generate` also creates 2 classes `Validator` and `Resolver` and this is how you would use them:
 
 ```typescript
-export interface User {
-    id: string;
-    name: {
-        firstName: string;
-        lastName: string;
+import {
+    Validator,
+    Resolver,
+    References,
+} from "./types/lib";
+import {
+    readdir,
+    readFile,
+} from "fs/promises";
+import {
+    join,
+    basename,
+} from "path";
+
+const USERS_DIR = "./users";
+const MESSAGES_DIR = "./messages";
+
+async function getResolvedReferences(): Promise<{
+    validationErrors: References.ValidationErrors,
+    resolutionErrors: References.ResolutionErrors,
+    resolvedReferences: References.ResolvedReferences,
+}> {
+    const validationErrors = References.initValidationErrors();
+    const resolutionErrors = References.initResolutionErrors();
+    const resolvedReferences = References.initResolvedReferences();
+    const validator = new Validator();
+    const resolver = new Resolver();
+    validator.success.on(data => resolver.add(data));
+    validator.failure.on(({reference, key, error}) => {
+        // store error for later
+        //
+        // You could also do some logging here
+        validationErrors[reference][key] = error;
+    });
+    resolver.success.on(({reference, key, instance}) => {
+        // store the resolved instance
+        //
+        // Note that at this point the references may not be
+        // fully resolved and you should store them and wait
+        // until the resolve function below has completed
+        resolveReferences[reference][key] = instance;
+    })
+    resolver.failure.on(({reference, key, error}) => {
+        // store error for later
+        //
+        // You could also do some logging here
+        resolutionErrors[reference][key] = error;
+    });
+
+    // Loop through the raw data and pass it to the validator
+    // in this case we can load it from JSON files that use the ids
+    // as file names. The validated instances will be piped into the
+    // resolver as we go.
+    const userFiles = await readdir(USERS_DIR);
+    for (const userFile of userFiles) {
+        const path = join(USERS_DIR, userFile);
+        const id = basename(userFile, ".json"); // get the ID from the filename
+        const json = await readFile(path);
+        validator.validate("Users", id, JSON.parse(json));
+    }
+    
+    const messageFiles = await readdir(MESSAGES_DIR);
+    for (const messageFile of messageFiles) {
+        const path = join(MESSAGES_DIR, messageFile);
+        const id = basename(messageFile, ".json"); // get the ID from the filename
+        const json = await readFile(path);
+        validator.validate("Messages", id, JSON.parse(json));
+    }
+    
+    // Only resolve the references after all the validated instances
+    // have been added
+    resolver.resolve();
+    
+    return {
+        validationErrors,
+        resolutionErrors,
+        resolvedReferences,
     }
 }
 
-export function isUser(value: unknown): value is User {
-    ...
-}
+// Load and resolve all the JSON files
+getResolvedReferences()
+.then(({validationErrors, resolutionErrors, resolvedReferences}) => {
+    // handle the errors and the resolved references as needed
+});
+
 ```
 
 ### Type constants
@@ -161,12 +254,12 @@ The following `Type` constants are provided as convenience primitive collection 
 
 ### Type classes
 
-#### `InterfaceType`
+#### `StructType`
 
 To define an interface type.
 
 ```typescript
-new InterfaceType(NAME?)
+new StructType(NAME)
     .property(PROPERTY_NAME, TYPE)
     .property(PROPERTY_NAME, TYPE)
     ...
@@ -177,7 +270,7 @@ new InterfaceType(NAME?)
 To define a union type.
 
 ```typescript
-new UnionType(NAME?)
+new UnionType(NAME)
     .type(TYPE)
     .type(TYPE)
     ...
@@ -188,7 +281,7 @@ new UnionType(NAME?)
 To define a list type.
 
 ```typescript
-new ListType(TYPE, NAME?)
+new ListType(NAME, TYPE)
 ```
 
 #### `DictionaryType`
@@ -196,51 +289,53 @@ new ListType(TYPE, NAME?)
 To define a dictionary type.
 
 ```typescript
-new DictionaryType(TYPE, NAME?)
+new DictionaryType(NAME, TYPE)
 ```
 
-#### `StringLiteralType`
+#### `LiteralType`
+
+Literal types only support literal primitives and are useful in union types to specify a limited list of valid values.
 
 To define a `string` literal type.
 
 ```typescript
-new StringLiteralType(VALUE, NAME?)
+new LiteralType<string>(NAME, VALUE)
 ```
-
-Literal types are useful in union types to specify a limited list of valid values.
-
-#### `NumberLiteralType`
 
 To define a `number` literal type.
 
 ```typescript
-new NumberLiteralType(VALUE, NAME?)
+new LiteralType<number>(NAME, VALUE)
 ```
 
-Literal types are useful in union types to specify a limited list of valid values.
-
-#### `LiteralType`
-
-To define a `boolean` literal type.
+To define a `string` literal type.
 
 ```typescript
-new LiteralType(VALUE, NAME?)
+new LiteralType<string>(NAME, VALUE)
 ```
 
-Literal types are useful in union types to specify a limited list of valid values.
+#### `ReferenceType`
+
+To define a reference type.
+
+```typescript
+new ReferenceType(NAME, TYPE)
+```
+
+Where `NAME` will be used as the name of the referenced collection.
 
 ## Contributing
 
 Run unit tests and build before pushing/opening a pull request.
 
-Start [Alarmist](https://github.com/pghalliday/alarmist) to lint, run tests and build on file changes:
+Start [Alarmist](https://github.com/pghalliday/alarmist) to lint, run tests, build and run integration tests on file changes:
 
 ```shell
 npm start
 ```
 
-Lint, run tests and build on demand:
+Lint, run tests, build and run integration tests on demand:
 
 ```shell
-npm run build
+npm run integration
 ```

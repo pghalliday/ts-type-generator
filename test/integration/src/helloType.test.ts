@@ -8,7 +8,7 @@ describe('Types', () => {
     describe('validateHello', () => {
         describe('with an invalid value', function () {
             it('should return an error', () => {
-                const result = Validated.validate_Hello(100)
+                const result = Validated.validateHello(100)
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not a [string]')
@@ -17,7 +17,7 @@ describe('Types', () => {
 
         describe('with an invalid string literal', function () {
             it('should return an error', () => {
-                const result = Validated.validate_Hello('banana')
+                const result = Validated.validateHello('banana')
                 result.should.be.an.instanceof(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not ["Hello"]')
@@ -27,7 +27,7 @@ describe('Types', () => {
 
         describe('with a valid string literal', function () {
             it('should return the value', () => {
-                const result = Validated.validate_Hello('Hello')
+                const result = Validated.validateHello('Hello')
                 result.should.be.a('string')
                 result.should.be.equal('Hello')
             })

@@ -8,7 +8,7 @@ describe('Types', () => {
     describe('validateDictionary', () => {
         describe('with an invalid value', function () {
             it('should return an error', () => {
-                const result = Validated.validate_Dictionary("orange")
+                const result = Validated.validateDictionary("orange")
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not a dictionary')
@@ -18,7 +18,7 @@ describe('Types', () => {
 
         describe('with an invalid element', function () {
             it('should return an error', () => {
-                const result = Validated.validate_Dictionary({
+                const result = Validated.validateDictionary({
                     apple: 99,
                 })
                 result.should.be.an.instanceOf(ValidationError)
@@ -37,7 +37,7 @@ describe('Types', () => {
                     banana: false,
                     pear: true,
                 }
-                const result = Validated.validate_Dictionary(dictionary)
+                const result = Validated.validateDictionary(dictionary)
                 result.should.not.equal(dictionary)
                 result.should.eql(dictionary)
             })

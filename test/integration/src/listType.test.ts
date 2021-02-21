@@ -8,7 +8,7 @@ describe('Types', () => {
     describe('validateList', () => {
         describe('with an invalid value', function () {
             it('translate with an invalid value should return an error', () => {
-                const result = Validated.validate_List("orange")
+                const result = Validated.validateList("orange")
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Not a list')
@@ -18,7 +18,7 @@ describe('Types', () => {
 
         describe('with an invalid element', function () {
             it('should return an error', () => {
-                const result = Validated.validate_List([99])
+                const result = Validated.validateList([99])
                 result.should.be.an.instanceOf(ValidationError)
                 const error = <ValidationError> result
                 error.message.should.equal('Error encountered validating index: [0]')
@@ -37,7 +37,7 @@ describe('Types', () => {
                     101,
                     102,
                 ]
-                const result = Validated.validate_List(list)
+                const result = Validated.validateList(list)
                 result.should.not.equal(list)
                 result.should.eql(list)
             })

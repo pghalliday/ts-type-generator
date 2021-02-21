@@ -14,14 +14,14 @@ describe('Type', function () {
     })
 
     it('should have the correct validator name', () => {
-        type.getValidatorName().should.equal(`validate_${NAME}`)
+        type.getValidatorName().should.equal(`validate${NAME}`)
     })
 
     it('should have the correct initializer name', () => {
-        type.getInitializerName().should.equal(`initialize_${NAME}`)
+        type.getInitializerName().should.equal(`initialize${NAME}`)
     })
 
     it('should have the correct resolver name', () => {
-        type.getResolverName().should.equal(`resolve_${NAME}`)
+        type.getResolverName().should.equal(`resolve${NAME}`)
     })
 });

@@ -18,14 +18,14 @@ export abstract class Type {
     }
 
     getValidatorName(): string {
-        return `validate_${this.name}`
+        return `validate${this.name}`
     }
 
     getInitializerName(): string {
-        return `initialize_${this.name}`
+        return `initialize${this.name}`
     }
 
     getResolverName(): string {
-        return `resolve_${this.name}`
+        return `resolve${this.name}`
     }
 }
