@@ -71,7 +71,6 @@ export class TsTypeGenerator {
             referencesData: references,
         }))
         await outputFile(join(outputDir, RESOLVER + '.ts'), Mustache.render(RESOLVER_CODE, {
-            validated: VALIDATED,
             partial: PARTIAL,
             resolved: RESOLVED,
             references: REFERENCES,
