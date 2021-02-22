@@ -8,16 +8,16 @@ export class Resolver {
     readonly failure = new Util.Event<References.ResolutionFailureData>();
 
     private readonly validatedReferences: References.ValidatedReferences = References.initValidatedReferences();
-    readonly partialReferences: References.PartialReferences = References.initPartialReferences();
 
     add(data: References.ValidationSuccessData): void {
         this.validatedReferences[data.reference][data.key] = data.instance;
     }
 
     resolve(): void {
+        const partialReferences: References.PartialReferences = References.initPartialReferences();
     {{#referencesData}}
         const validated_{{{name}}} = this.validatedReferences.{{{name}}};
-        const partial_{{{name}}} = this.partialReferences.{{{name}}};
+        const partial_{{{name}}} = partialReferences.{{{name}}};
         for (const key in validated_{{{name}}}) {
             partial_{{{name}}}[key] = Partial.{{{initializer}}}(validated_{{{name}}}[key]);
         }
@@ -25,7 +25,7 @@ export class Resolver {
 
     {{#referencesData}}
         for (const key in validated_{{{name}}}) {
-            const partial = Partial.{{{resolver}}}(partial_{{{name}}}[key], validated_{{{name}}}[key], this.partialReferences);
+            const partial = Partial.{{{resolver}}}(partial_{{{name}}}[key], validated_{{{name}}}[key], partialReferences);
             if (partial instanceof {{{internalPrefix}}}Util.ResolutionError) {
                 this.failure.emit({
                     reference: "{{{name}}}",

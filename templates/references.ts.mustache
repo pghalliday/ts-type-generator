@@ -3,6 +3,18 @@ import * as Partial from "./{{{partial}}}";
 import * as Resolved from "./{{{resolved}}}";
 import * as Util from "./{{{utilDir}}}";
 
+export type ReferenceName =
+{{#referencesData}}
+    "{{{name}}}" |
+{{/referencesData}}
+    never;
+
+export const referenceNames: ReferenceName[] = [
+{{#referencesData}}
+    "{{{name}}}",
+{{/referencesData}}
+];
+
 export type ValidationUnknownData =
 {{#referencesData}}
     {

@@ -2,8 +2,6 @@ import {
     Type,
     INTERNAL_PREFIX,
     TEMPLATES_DIR,
-    collectTypes,
-    collectReferences,
     Reference,
 } from "../internal";
 import map from "lodash/map"
@@ -18,13 +16,6 @@ const TYPE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'UnionType')
 const VALIDATE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'validated.ts.mustache')).toString()
 const RESOLVE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'partial.ts.mustache')).toString()
 const COLLAPSE_CODE = readFileSync(join(TYPE_TEMPLATES_DIR, 'resolved.ts.mustache')).toString()
-
-export class UnionError extends Error {}
-
-/* istanbul ignore next */
-function checkForReferences(types: Type[]): void {
-    if (collectReferences(collectTypes(types)).length > 0) throw new UnionError('Union types cannot contain reference types')
-}
 
 export class UnionType extends Type {
     private readonly types: Type[] = []
@@ -49,13 +40,17 @@ export class UnionType extends Type {
 
     /* istanbul ignore next */
     async writePartialCode(exports: number): Promise<void> {
-        checkForReferences(this.types)
         await write(exports, Mustache.render(RESOLVE_CODE, {
             internalPrefix: INTERNAL_PREFIX,
             name: this.getTypeName(),
             initializer: this.getInitializerName(),
             resolver: this.getResolverName(),
-            types: map(this.types, type => type.getTypeName()),
+            types: map(this.types, type => ({
+                name: type.getTypeName(),
+                validator: type.getValidatorName(),
+                initializer: type.getInitializerName(),
+                resolver: type.getResolverName(),
+            })),
         }))
     }
 

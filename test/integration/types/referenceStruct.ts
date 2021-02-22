@@ -7,6 +7,8 @@ import {helloType} from "./helloType";
 import {ListType} from "../../../lib";
 import {DictionaryType} from "../../../lib";
 import {unionType} from "./unionType";
+import {UnionType} from "../../../lib";
+import {LiteralType} from "../../../lib";
 
 export const booleanLiteralReference = new ReferenceType('BooleanLiteralReference', trueType);
 export const numberLiteralReference = new ReferenceType('NumberLiteralReference', oneHundredType);
@@ -26,6 +28,18 @@ export const stringDictionaryReference = new ReferenceType('StringDictionaryRefe
 
 export const stringReferenceList = new ListType('StringReferenceList', stringReference)
 export const stringReferenceDictionary = new DictionaryType('StringReferenceDictionary', stringReference)
+
+export const literalNumber = new LiteralType<string>('LiteralNumber', 'number')
+export const literalString = new LiteralType<string>('LiteralString', 'string')
+export const referenceNumber = new StructType('ReferenceNumber')
+    .property('type', literalNumber)
+    .property('ref', numberReference)
+export const referenceString = new StructType('ReferenceString')
+    .property('type', literalString)
+    .property('ref', stringReference)
+export const referenceUnion = new UnionType('referenceUnion')
+    .type(referenceNumber)
+    .type(referenceString)
 
 export const unionReference = new ReferenceType('UnionReference', unionType)
 
@@ -48,5 +62,5 @@ referenceStruct
     .property('unionReference', unionReference)
     .property('stringReferenceList', stringReferenceList)
     .property('stringReferenceDictionary', stringReferenceDictionary)
+    .property('referenceUnion', referenceUnion)
     .property('circularReference', structReference)
-

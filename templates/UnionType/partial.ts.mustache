@@ -1,13 +1,23 @@
 export type {{{name}}} =
 {{#types}}
-    {{{.}}} |
+    {{{name}}} |
 {{/types}}
     undefined;
 
 export function {{{initializer}}}(validated: {{{internalPrefix}}}Validated.{{{name}}}): {{{name}}} {
-    return validated;
+{{#types}}
+    {
+        const checked = {{{internalPrefix}}}Validated.{{{validator}}}(validated);
+        if (!(checked instanceof {{{internalPrefix}}}Util.ValidationError)) return {{{initializer}}}(checked);
+    }
+{{/types}}
 }
 
 export function {{{resolver}}}(dest: {{{name}}}, src: {{{internalPrefix}}}Validated.{{{name}}}, partialReferences: {{{internalPrefix}}}References.PartialReferences): {{{name}}} | {{{internalPrefix}}}Util.ResolutionError {
-    return src;
+{{#types}}
+    {
+        const checked = {{{internalPrefix}}}Validated.{{{validator}}}(src);
+        if (!(checked instanceof {{{internalPrefix}}}Util.ValidationError)) return {{{resolver}}}(<{{{name}}}> dest, checked, partialReferences);
+    }
+{{/types}}
 }

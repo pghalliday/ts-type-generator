@@ -174,6 +174,7 @@ async function getResolvedReferences(): Promise<{
     const resolvedReferences = References.initResolvedReferences();
     const validator = new Validator();
     const resolver = new Resolver();
+    
     // pipe the validated structures into the resolver
     validator.success.on(data => resolver.add(data));
     validator.failure.on(({reference, key, error}) => {
@@ -188,7 +189,7 @@ async function getResolvedReferences(): Promise<{
         // Note that at this point the references may not be
         // fully resolved and you should store them and wait
         // until the resolve function below has completed
-        resolveReferences[reference][key] = instance;
+        resolvedReferences[reference][key] = instance;
     })
     resolver.failure.on(({reference, key, error}) => {
         // store error for later
@@ -205,16 +206,24 @@ async function getResolvedReferences(): Promise<{
     for (const userFile of userFiles) {
         const path = join(USERS_DIR, userFile);
         const id = basename(userFile, ".json"); // get the ID from the filename
-        const json = await readFile(path);
-        validator.validate("Users", id, JSON.parse(json));
+        const json = await readFile(path).toString();
+        validator.validate({
+            reference: "Users",
+            key: id,
+            data: JSON.parse(json),
+        });
     }
     
     const messageFiles = await readdir(MESSAGES_DIR);
     for (const messageFile of messageFiles) {
         const path = join(MESSAGES_DIR, messageFile);
         const id = basename(messageFile, ".json"); // get the ID from the filename
-        const json = await readFile(path);
-        validator.validate("Messages", id, JSON.parse(json));
+        const json = await readFile(path).toString();
+        validator.validate({
+            reference: "Messages",
+            key: id,
+            data: JSON.parse(json),
+        });
     }
     
     // Only resolve the references after all the validated instances

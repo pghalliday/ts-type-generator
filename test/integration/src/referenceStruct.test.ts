@@ -147,6 +147,10 @@ const struct1: Validated.ReferenceStruct = {
         key1: 'key1',
         key2: 'key2',
     },
+    referenceUnion: {
+        type: 'number',
+        ref: 'key1',
+    },
     circularReference: 'key2',
 }
 
@@ -169,6 +173,10 @@ const struct2: Validated.ReferenceStruct = {
         key1: 'key2',
         key2: 'key1',
     },
+    referenceUnion: {
+        type: 'string',
+        ref: 'key2',
+    },
     circularReference: 'key1',
 }
 
@@ -189,6 +197,10 @@ const struct3: Validated.ReferenceStruct = {
     stringReferenceList: ['key3'],
     stringReferenceDictionary: {
         key3: 'key3',
+    },
+    referenceUnion: {
+        type: 'string',
+        ref: 'key3',
     },
     circularReference: 'key3',
 }
@@ -419,6 +431,17 @@ describe('Types', () => {
                     resolvedStruct2.stringReferenceDictionary.should.eql({
                         key1: string2,
                         key2: string1,
+                    })
+                })
+
+                it('should correctly resolve unions with references', () => {
+                    resolvedStruct1.referenceUnion.should.eql({
+                        type: 'number',
+                        ref: number1,
+                    })
+                    resolvedStruct2.referenceUnion.should.eql({
+                        type: 'string',
+                        ref: string2,
                     })
                 })
 
