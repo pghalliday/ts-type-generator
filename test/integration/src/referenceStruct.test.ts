@@ -216,6 +216,12 @@ const invalidStructReference: References.ValidatedReference_StructReference = {
     key3: struct3,
 }
 
+const invalidDataStructReference: {[key: string]: unknown} = {
+    key1: struct1,
+    key2: struct2,
+    key3: {},
+}
+
 describe('Types', () => {
     describe('referenceStruct', () => {
         describe('Resolver', () => {
@@ -471,6 +477,28 @@ describe('Types', () => {
                     const error = resolutionErrors.StructReference['key3']
                     error.message.should.eql('Error encountered resolving property: [booleanLiteralReference]')
                     error.cause?.message.should.eql('Reference not found: [BooleanLiteralReference/key3]')
+                })
+            })
+
+            describe('with invalid data', () => {
+                beforeEach(() => {
+                    for (const key in invalidDataStructReference) {
+                        validator.validate({
+                            reference: "StructReference",
+                            key,
+                            data: invalidDataStructReference[key],
+                        })
+                    }
+                    resolver.resolve()
+                })
+
+                it('should emit a validation error', () => {
+                    const error = validationErrors.StructReference['key3']
+                    error.message.should.eql('Property missing: ["booleanLiteralReference"]')
+                })
+
+                it('should not emit any resolution errors', () => {
+                    resolutionErrors.should.eql(References.initResolutionErrors())
                 })
             })
         })
