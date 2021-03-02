@@ -5,7 +5,17 @@ export type {{{name}}} = {
 };
 
 export function {{{validator}}}(data: unknown): {{{name}}} | {{{internalPrefix}}}Util.ValidationError {
+    const propertyNames: string[] = [
+    {{#properties}}
+        "{{{name}}}",
+    {{/properties}}
+    ];
     if (!{{{internalPrefix}}}Util.isObject(data)) return new {{{internalPrefix}}}Util.ValidationError("Not an object");
+    for (const prop in data) {
+        if (Object.prototype.hasOwnProperty.call(data, prop)) {
+            if (!propertyNames.includes(prop)) return new {{{internalPrefix}}}Util.ValidationError(`Unknown property: ["${prop}"]`);
+        }
+    }
     {{#properties}}
     const property_{{{name}}} = {{{internalPrefix}}}Util.validateProperty(data, "{{{name}}}", {{{validator}}});
     if (property_{{{name}}} instanceof {{{internalPrefix}}}Util.ValidationError) return property_{{{name}}};

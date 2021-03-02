@@ -67,6 +67,19 @@ describe('Types', () => {
             })
         });
 
+        describe('with an unknown property', function () {
+            it('should return an error', () => {
+                const invalidValue = Object.assign({}, VALUE, {
+                    unknown: "unknown",
+                })
+                const result = Validated.validateStruct(invalidValue)
+                result.should.be.an.instanceOf(ValidationError)
+                const error = <ValidationError> result
+                error.message.should.equal('Unknown property: ["unknown"]')
+                expect(error.cause).to.be.undefined
+            })
+        });
+
         describe('with a valid value', function () {
             it('should return a copy of the value', () => {
                 const result = Validated.validateStruct(VALUE)
